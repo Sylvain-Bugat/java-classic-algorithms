@@ -1,5 +1,7 @@
 package com.github.sbugat.problems.chess;
 
+import gnu.getopt.Getopt;
+
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -23,12 +25,16 @@ public class NQueensProblem {
 	private final boolean [] usedDescendingDiagonals;
 	/**Number of solution counter*/
 	private long solutionCount;
+
 	/**Size of the chess board*/
 	private final int chessboardSize;
+	/**Print solution flag*/
+	private final boolean printSolution;
 
-	public NQueensProblem( final int chessboardSizeArg ) throws IOException {
+	public NQueensProblem( final int chessboardSizeArg, final boolean printSolutionArg ) throws IOException {
 
 		chessboardSize = chessboardSizeArg;
+		printSolution = printSolutionArg;
 
 		chessboard = new boolean[ chessboardSizeArg ][ chessboardSizeArg ];
 		usedColumns = new boolean[ chessboardSizeArg ];
@@ -72,7 +78,6 @@ public class NQueensProblem {
 					//All queens are sets on the chessboard then a solution is found!
 					if( y + 1 >= chessboardSize ) {
 						solutionCount++;
-						System.out.println( "\nsolution nunmber " + solutionCount );
 						print();
 					}
 					else {
@@ -94,18 +99,31 @@ public class NQueensProblem {
 	 */
 	public void print() {
 
-		for( int y=0 ; y < chessboardSize ; y++ ) {
+		if( printSolution ) {
+			System.out.println( "\nsolution number " + solutionCount );
 
-			for( int x=0 ; x < chessboardSize ; x++ ) {
+			for( int y=0 ; y < chessboardSize ; y++ ) {
 
-				if( chessboard[ y ][ x ] ) {
-					System.out.print( 1 );
+				for( int x=0 ; x < chessboardSize ; x++ ) {
+
+					if( chessboard[ y ][ x ] ) {
+						System.out.print( 1 );
+					}
+					else {
+						System.out.print( 0 );
+					}
 				}
-				else {
-					System.out.print( 0 );
-				}
+				System.out.println();
 			}
-			System.out.println();
+		}
+		else {
+
+			if( 0 == solutionCount % 100 ) {
+				System.out.println( "." );
+			}
+			else {
+				System.out.print( "." );
+			}
 		}
 	}
 
@@ -116,21 +134,41 @@ public class NQueensProblem {
 	 */
 	public static void main( final String args[] ) throws IOException {
 
-		try {
-			//If no argument, resolve the problem on a standard chessboard (8x8 board)
-			if( 0 == args.length ) {
-				new NQueensProblem( 8 );
+		final Getopt getOpt = new Getopt( "NQueensProblem", args, ":n:s" );
+		getOpt.setOpterr( false );
+
+		//Default chessboard size
+		int chessBoardSize = 8;
+		boolean printSolution = true;
+
+		int c = getOpt.getopt();
+		while( -1 != c )
+		{
+			switch(c)
+			{
+			case 'n':
+				try {
+					chessBoardSize = Integer.parseInt( getOpt.getOptarg() );
+				}
+				catch( final NumberFormatException e ) {
+					System.err.println( "Usage: " + NQueensProblem.class.getSimpleName() + " [-n <size of the chessboard>] [-s]" );
+					System.exit( 1 );
+				}
+				break;
+
+			case 's':
+				printSolution = false;
+				break;
+
+			case '?':
+			default:
+				System.err.println( "Usage: " + NQueensProblem.class.getSimpleName() + " [-n <size of the chessboard>] [-s]" );
+				System.exit( 1 );
 			}
-			//
-			else if( 1 == args.length && Integer.parseInt( args[ 0 ] ) > 0 ){
-				new NQueensProblem( Integer.parseInt( args[ 0 ] ) );
-			}
-			else {
-				System.err.println( "Usage: " + NQueensProblem.class.toString() + " [<size of the chessboard>]" );
-			}
+
+			c = getOpt.getopt();
 		}
-		catch( final NumberFormatException e ) {
-			System.err.println( "Usage: " + NQueensProblem.class.toString() + " [<size of the chessboard>]" );
-		}
+
+		new NQueensProblem( chessBoardSize, printSolution );
 	}
 }
