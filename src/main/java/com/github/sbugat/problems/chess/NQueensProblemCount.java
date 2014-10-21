@@ -60,7 +60,7 @@ public class NQueensProblemCount {
 		for( int x=0 ; x < chessboardSize/2 ; x ++ ){
 
 			final int diag1 = x;
-			final int diag2 = x + chessboardSize - 1;
+			final int diag2 = x + chessboardSizeMinusOne;
 
 			unusedColumns[ x ] = false;
 			unusedAscendingDiagonals[ diag1 ] = false;
@@ -83,7 +83,7 @@ public class NQueensProblemCount {
 			final int x=chessboardSize/2;
 
 			final int diag1 = x;
-			final int diag2 = x + chessboardSize - 1;
+			final int diag2 = x + chessboardSizeMinusOne;
 
 			unusedColumns[ x ] = false;
 			unusedAscendingDiagonals[ diag1 ] = false;
