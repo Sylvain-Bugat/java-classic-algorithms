@@ -118,14 +118,6 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-jar-plugin</artifactId>
 						<version>${maven.pluginjar.version}</version>
-						<configuration>
-							<archive>
-								<manifest>
-									<addClasspath>true</addClasspath>
-									<mainClass>com.github.sbugat.logsanalyzer.LogsAnalyzer</mainClass>
-								</manifest>
-							</archive>
-						</configuration>
 					</plugin>
 				</plugins>
 			</build>
