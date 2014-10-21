@@ -10,7 +10,7 @@ import java.util.Arrays;
  *
  * Time on Intel Q6600 CPU:
  * 8       9         10       11       12       13       14       15        16
- * 0m0.111s 0m0.100s 0m0.124s 0m0.146s 0m0.198s 0m0.530s 0m2.411s 0m15.182s 1m36.457s
+ * 0m0.140s 0m0.112s 0m0.124s 0m0.133s 0m0.161s 0m0.411s 0m1.710s 0m11.115s 1m13.614s
  *
  * @author Sylvain Bugat
  *
@@ -119,53 +119,52 @@ public class NQueensProblemCount {
 	 */
 	private void solve( int y ) {
 
+		int x=-1;
 		while( stacklevel > 0 ) {
 			//Test all square of the line
-			for( int x=0 ; x < chessboardSize ; x ++ ){
+			x++;
 
-				//if the row is not already blocked by another queen
-				if( unusedColumns[x] ) {
+			//if the row is not already blocked by another queen
+			if( unusedColumns[x] ) {
 
-					final int diag1 = x + stacklevel;
-					final int diag2 = x + chessboardSizeMinusOne - stacklevel ;
+				final int diag1 = x + stacklevel;
+				final int diag2 = x + chessboardSizeMinusOne - stacklevel ;
 
-					//if both diagonals are not already blocked by anothers queens
-					if( unusedAscendingDiagonals[ diag1 ] && unusedDescendingDiagonals[ diag2 ] ) {
+				//if both diagonals are not already blocked by anothers queens
+				if( unusedAscendingDiagonals[ diag1 ] && unusedDescendingDiagonals[ diag2 ] ) {
 
-						unusedColumns[ x ] = false;
-						unusedAscendingDiagonals[ diag1 ] = false;
-						unusedDescendingDiagonals[ diag2 ] = false;
+					unusedColumns[ x ] = false;
+					unusedAscendingDiagonals[ diag1 ] = false;
+					unusedDescendingDiagonals[ diag2 ] = false;
 
-						stackx[ stacklevel ] = x;
-						stackdiag1[ stacklevel ] = diag1;
-						stackdiag2[ stacklevel ] = diag2;
-						stacklevel ++;
+					stackx[ stacklevel ] = x;
+					stackdiag1[ stacklevel ] = diag1;
+					stackdiag2[ stacklevel ] = diag2;
+					stacklevel ++;
 
-						//All queens are sets on the chessboard then a solution is found!
-						if( stacklevel >= chessboardSize ) {
-							solutionCount++;
+					//All queens are sets on the chessboard then a solution is found!
+					if( stacklevel >= chessboardSize ) {
+						solutionCount++;
 
-							x = chessboardSize - 1;
-						}
-						else {
-							x = -1;
-						}
-					}
-				}
-
-				while( x >= chessboardSize - 1 && stacklevel > 0 ) {
-
-					stacklevel --;
-					if( stacklevel > 0 ) {
-						unusedDescendingDiagonals[ stackdiag2[ stacklevel ] ] = true;
-						unusedAscendingDiagonals[ stackdiag1[ stacklevel ] ] = true;
-						x = stackx[ stacklevel ];
-						unusedColumns[ x ] = true;
+						x = chessboardSize - 1;
 					}
 					else {
-						x = chessboardSize;
-						break;
+						x = -1;
 					}
+				}
+			}
+
+			while( x >= chessboardSizeMinusOne ) {
+
+				stacklevel --;
+				if( stacklevel > 0 ) {
+					unusedDescendingDiagonals[ stackdiag2[ stacklevel ] ] = true;
+					unusedAscendingDiagonals[ stackdiag1[ stacklevel ] ] = true;
+					x = stackx[ stacklevel ];
+					unusedColumns[ x ] = true;
+				}
+				else {
+					return;
 				}
 			}
 		}
