@@ -10,7 +10,7 @@ import java.util.Arrays;
  *
  * Time on Intel Q6600 CPU:
  * 8       9         10       11       12       13       14       15        16
- * 0m0.101s 0m0.118s 0m0.118s 0m0.128s 0m0.174s 0m0.506s 0m2.130s 0m15.820s 1m30.699s
+ * 0m0.111s 0m0.100s 0m0.124s 0m0.146s 0m0.198s 0m0.530s 0m2.411s 0m15.182s 1m36.457s
  *
  * @author Sylvain Bugat
  *
@@ -32,6 +32,12 @@ public class NQueensProblemCount {
 	private final int chessboardSize;
 	private final int chessboardSizeMinusOne;
 
+	private final int [] stackx;
+	private final int [] stackdiag1;
+	private final int [] stackdiag2;
+
+	private int stacklevel=1;
+
 	public NQueensProblemCount( final int chessboardSizeArg ) throws IOException {
 
 		chessboardSize = chessboardSizeArg;
@@ -43,6 +49,10 @@ public class NQueensProblemCount {
 		Arrays.fill( unusedAscendingDiagonals, true );
 		unusedDescendingDiagonals = new boolean[ chessboardSizeArg * 2 - 1 ];
 		Arrays.fill( unusedDescendingDiagonals, true );
+
+		stackx = new int[ chessboardSizeArg ];
+		stackdiag1 = new int[ chessboardSizeArg ];
+		stackdiag2 = new int[ chessboardSizeArg ];
 
 		//Start the algorithm at the fisrt line
 		solve();
@@ -67,6 +77,8 @@ public class NQueensProblemCount {
 			unusedDescendingDiagonals[ diag2 ] = false;
 
 			//Go on to the second line
+			stackx[ 0 ] = x;
+			stacklevel = 1;
 			solve( 1 );
 
 			unusedDescendingDiagonals[ diag2 ] = true;
@@ -90,6 +102,8 @@ public class NQueensProblemCount {
 			unusedDescendingDiagonals[ diag2 ] = false;
 
 			//Go on to the second line
+			stacklevel = 1;
+			stackx[ 0 ] = x;
 			solve( 1 );
 
 			unusedDescendingDiagonals[ diag2 ] = true;
@@ -103,36 +117,55 @@ public class NQueensProblemCount {
 	 *
 	 * @param y number of the line stating at 0
 	 */
-	private void solve( final int y ) {
+	private void solve( int y ) {
 
-		//Test all square of the line
-		for( int x=0 ; x < chessboardSize ; x ++ ){
+		while( stacklevel > 0 ) {
+			//Test all square of the line
+			for( int x=0 ; x < chessboardSize ; x ++ ){
 
-			//if the row is not already blocked by another queen
-			if( unusedColumns[x] ) {
+				//if the row is not already blocked by another queen
+				if( unusedColumns[x] ) {
 
-				final int diag1 = x + y;
-				final int diag2 = x + chessboardSizeMinusOne - y ;
+					final int diag1 = x + stacklevel;
+					final int diag2 = x + chessboardSizeMinusOne - stacklevel ;
 
-				//if both diagonals are not already blocked by anothers queens
-				if( unusedAscendingDiagonals[ diag1 ] && unusedDescendingDiagonals[ diag2 ] ) {
+					//if both diagonals are not already blocked by anothers queens
+					if( unusedAscendingDiagonals[ diag1 ] && unusedDescendingDiagonals[ diag2 ] ) {
 
-					unusedColumns[ x ] = false;
-					unusedAscendingDiagonals[ diag1 ] = false;
-					unusedDescendingDiagonals[ diag2 ] = false;
+						unusedColumns[ x ] = false;
+						unusedAscendingDiagonals[ diag1 ] = false;
+						unusedDescendingDiagonals[ diag2 ] = false;
 
-					//All queens are sets on the chessboard then a solution is found!
-					if( y >= chessboardSizeMinusOne ) {
-						solutionCount++;
+						stackx[ stacklevel ] = x;
+						stackdiag1[ stacklevel ] = diag1;
+						stackdiag2[ stacklevel ] = diag2;
+						stacklevel ++;
+
+						//All queens are sets on the chessboard then a solution is found!
+						if( stacklevel >= chessboardSize ) {
+							solutionCount++;
+
+							x = chessboardSize - 1;
+						}
+						else {
+							x = -1;
+						}
+					}
+				}
+
+				while( x >= chessboardSize - 1 && stacklevel > 0 ) {
+
+					stacklevel --;
+					if( stacklevel > 0 ) {
+						unusedDescendingDiagonals[ stackdiag2[ stacklevel ] ] = true;
+						unusedAscendingDiagonals[ stackdiag1[ stacklevel ] ] = true;
+						x = stackx[ stacklevel ];
+						unusedColumns[ x ] = true;
 					}
 					else {
-						//Go on to the next line
-						solve( y + 1 );
+						x = chessboardSize;
+						break;
 					}
-
-					unusedDescendingDiagonals[ diag2 ] = true;
-					unusedAscendingDiagonals[ diag1 ] = true;
-					unusedColumns[ x ] = true;
 				}
 			}
 		}
