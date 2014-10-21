@@ -8,35 +8,41 @@ import java.util.Arrays;
 /**
  * Classic N chess queens on a size N chess board
  *
+ * Time on Intel Q6600 CPU:
+ * 8       9         10       11       12       13       14       15        16
+ * 0m0.101s 0m0.118s 0m0.118s 0m0.128s 0m0.174s 0m0.506s 0m2.130s 0m15.820s 1m30.699s
+ *
  * @author Sylvain Bugat
  *
  */
 public class NQueensProblemCount {
 
-	/**Array to mark already used columns*/
-	private final boolean [] usedColumns;
-	/**Array to mark already used ascending diagonals
+	/**Array to mark unused columns*/
+	private final boolean [] unusedColumns;
+	/**Array to mark unused ascending diagonals
 	 * diagonal number = x + y */
-	private final boolean [] usedAscendingDiagonals;
-	/**Array to mark already used descending diagonals
+	private final boolean [] unusedAscendingDiagonals;
+	/**Array to mark unused descending diagonals
 	 * diagonal number = x + chess board size - 1 - y*/
-	private final boolean [] usedDescendingDiagonals;
+	private final boolean [] unusedDescendingDiagonals;
 	/**Number of solution counter*/
 	private long solutionCount;
 
 	/**Size of the chess board*/
 	private final int chessboardSize;
+	private final int chessboardSizeMinusOne;
 
 	public NQueensProblemCount( final int chessboardSizeArg ) throws IOException {
 
 		chessboardSize = chessboardSizeArg;
+		chessboardSizeMinusOne = chessboardSizeArg - 1;
 
-		usedColumns = new boolean[ chessboardSizeArg ];
-		Arrays.fill( usedColumns, true );
-		usedAscendingDiagonals = new boolean[ chessboardSizeArg * 2 - 1 ];
-		Arrays.fill( usedAscendingDiagonals, true );
-		usedDescendingDiagonals = new boolean[ chessboardSizeArg * 2 - 1 ];
-		Arrays.fill( usedDescendingDiagonals, true );
+		unusedColumns = new boolean[ chessboardSizeArg ];
+		Arrays.fill( unusedColumns, true );
+		unusedAscendingDiagonals = new boolean[ chessboardSizeArg * 2 - 1 ];
+		Arrays.fill( unusedAscendingDiagonals, true );
+		unusedDescendingDiagonals = new boolean[ chessboardSizeArg * 2 - 1 ];
+		Arrays.fill( unusedDescendingDiagonals, true );
 
 		//Start the algorithm at the fisrt line
 		solve();
@@ -56,16 +62,16 @@ public class NQueensProblemCount {
 			final int diag1 = x;
 			final int diag2 = x + chessboardSize - 1;
 
-			usedColumns[ x ] = false;
-			usedAscendingDiagonals[ diag1 ] = false;
-			usedDescendingDiagonals[ diag2 ] = false;
+			unusedColumns[ x ] = false;
+			unusedAscendingDiagonals[ diag1 ] = false;
+			unusedDescendingDiagonals[ diag2 ] = false;
 
 			//Go on to the second line
 			solve( 1 );
 
-			usedDescendingDiagonals[ diag2 ] = true;
-			usedAscendingDiagonals[ diag1 ] = true;
-			usedColumns[ x ] = true;
+			unusedDescendingDiagonals[ diag2 ] = true;
+			unusedAscendingDiagonals[ diag1 ] = true;
+			unusedColumns[ x ] = true;
 		}
 
 		//Multiply by 2 the solution count for the other half not calculated
@@ -79,16 +85,16 @@ public class NQueensProblemCount {
 			final int diag1 = x;
 			final int diag2 = x + chessboardSize - 1;
 
-			usedColumns[ x ] = false;
-			usedAscendingDiagonals[ diag1 ] = false;
-			usedDescendingDiagonals[ diag2 ] = false;
+			unusedColumns[ x ] = false;
+			unusedAscendingDiagonals[ diag1 ] = false;
+			unusedDescendingDiagonals[ diag2 ] = false;
 
 			//Go on to the second line
 			solve( 1 );
 
-			usedDescendingDiagonals[ diag2 ] = true;
-			usedAscendingDiagonals[ diag1 ] = true;
-			usedColumns[ x ] = true;
+			unusedDescendingDiagonals[ diag2 ] = true;
+			unusedAscendingDiagonals[ diag1 ] = true;
+			unusedColumns[ x ] = true;
 		}
 	}
 
@@ -103,20 +109,20 @@ public class NQueensProblemCount {
 		for( int x=0 ; x < chessboardSize ; x ++ ){
 
 			//if the row is not already blocked by another queen
-			if( usedColumns[x] ) {
+			if( unusedColumns[x] ) {
 
 				final int diag1 = x + y;
-				final int diag2 = x + chessboardSize - 1 - y ;
+				final int diag2 = x + chessboardSizeMinusOne - y ;
 
 				//if both diagonals are not already blocked by anothers queens
-				if( usedAscendingDiagonals[ diag1 ] && usedDescendingDiagonals[ diag2 ] ) {
+				if( unusedAscendingDiagonals[ diag1 ] && unusedDescendingDiagonals[ diag2 ] ) {
 
-					usedColumns[ x ] = false;
-					usedAscendingDiagonals[ diag1 ] = false;
-					usedDescendingDiagonals[ diag2 ] = false;
+					unusedColumns[ x ] = false;
+					unusedAscendingDiagonals[ diag1 ] = false;
+					unusedDescendingDiagonals[ diag2 ] = false;
 
 					//All queens are sets on the chessboard then a solution is found!
-					if( y + 1 >= chessboardSize ) {
+					if( y >= chessboardSizeMinusOne ) {
 						solutionCount++;
 					}
 					else {
@@ -124,9 +130,9 @@ public class NQueensProblemCount {
 						solve( y + 1 );
 					}
 
-					usedDescendingDiagonals[ diag2 ] = true;
-					usedAscendingDiagonals[ diag1 ] = true;
-					usedColumns[ x ] = true;
+					unusedDescendingDiagonals[ diag2 ] = true;
+					unusedAscendingDiagonals[ diag1 ] = true;
+					unusedColumns[ x ] = true;
 				}
 			}
 		}
