@@ -2,14 +2,12 @@ package com.github.sbugat.problems.chess;
 
 import gnu.getopt.Getopt;
 
-import java.io.IOException;
-
 /**
- * Classic N chess queens on a size N chess board
+ * Classic N chess queens on a size N chess board with bits flags
  *
  * Time on Intel Q6600 CPU:
  * 8       9         10       11       12       13       14       15        16
- * 0m0.140s 0m0.126s 0m0.115s 0m0.123s 0m0.194s 0m0.575s 0m2.908s 0m18.047s 2m3.400s
+ * 0m0.112s 0m0.119s 0m0.109s 0m0.119s 0m0.159s 0m0.361s 0m1.500s 0m9.468s 1m1.047s
  *
  * @author Sylvain Bugat
  *
@@ -37,10 +35,51 @@ public class NQueensProblemCountBitFlagsRecursive {
 		diagonalShifting = 32 - chessboardSizeArg / 2;
 
 		//Start the algorithm at the fisrt line
-		solve( 0 );
+		solve();
 
 		//End of the algorithm print the total of solution(s) found
 		System.out.println( "Total number of solution(s):" + solutionCount );
+	}
+
+	/**
+	 * First line to divide by 2 explored tree
+	 */
+	private void solve() {
+
+		//Test half square of the line
+		for( int x=0 ; x < chessboardSize/2 ; x ++ ){
+
+			unusedColumns = unusedColumns | ( 1 << x );
+			unusedAscendingDiagonals = ( unusedAscendingDiagonals | ( 1L << diagonalShifting + x ) ) << 1;
+			unusedDescendingDiagonals = ( unusedDescendingDiagonals | ( 1L << diagonalShifting + x ) ) >> 1;
+
+			//Go on to the second line
+			solve( 1 );
+
+			unusedColumns = unusedColumns ^ ( 1 << x );
+			unusedAscendingDiagonals = unusedAscendingDiagonals >> 1 ^ ( 1L << diagonalShifting + x );
+			unusedDescendingDiagonals = unusedDescendingDiagonals << 1 ^ ( 1L << diagonalShifting + x );
+		}
+
+		//Multiply by 2 the solution count for the other half not calculated
+		solutionCount *= 2;
+
+		//If the cheesboard size is odd, test with a queen on the middle of the first line
+		if( 0 != chessboardSize % 2 ) {
+
+			final int x=chessboardSize/2;
+
+			unusedColumns = unusedColumns | ( 1 << x );
+			unusedAscendingDiagonals = ( unusedAscendingDiagonals | ( 1L << diagonalShifting + x ) ) << 1;
+			unusedDescendingDiagonals = ( unusedDescendingDiagonals | ( 1L << diagonalShifting + x ) ) >> 1;
+
+			//Go on to the second line
+			solve( 1 );
+
+			unusedColumns = unusedColumns ^ ( 1 << x );
+			unusedAscendingDiagonals = unusedAscendingDiagonals >> 1 ^ ( 1L << diagonalShifting + x );
+			unusedDescendingDiagonals = unusedDescendingDiagonals << 1 ^ ( 1L << diagonalShifting + x );
+		}
 	}
 
 	/**
@@ -81,13 +120,13 @@ public class NQueensProblemCountBitFlagsRecursive {
 	}
 
 	/**
+	 * Maisn program
 	 *
 	 * @param args
-	 * @throws IOException
 	 */
 	public static void main( final String args[] ) {
 
-		final Getopt getOpt = new Getopt( "NQueensProblem", args, ":n:" );
+		final Getopt getOpt = new Getopt( NQueensProblemCountBitFlagsRecursive.class.getSimpleName(), args, ":n:" );
 		getOpt.setOpterr( false );
 
 		//Default chessboard size
