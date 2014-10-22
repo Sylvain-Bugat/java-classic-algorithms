@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 /**
- * Classic N chess queens on a size N chess board
+ * Classic N chess queens on a size N chess board with iterative and stack method
  *
  * Time on Intel Q6600 CPU:
  * 8       9         10       11       12       13       14       15        16
@@ -55,7 +55,7 @@ public class NQueensProblemCount {
 		stackdiag2 = new int[ chessboardSizeArg ];
 
 		//Start the algorithm at the fisrt line
-		solve();
+		firstSolve();
 
 		//End of the algorithm print the total of solution(s) found
 		System.out.println( "Total number of solution(s):" + solutionCount );
@@ -64,7 +64,7 @@ public class NQueensProblemCount {
 	/**
 	 * First line to divide by 2 explored tree
 	 */
-	private void solve() {
+	private void firstSolve() {
 
 		//Test half square of the line
 		for( int x=0 ; x < chessboardSize/2 ; x ++ ){
@@ -79,7 +79,7 @@ public class NQueensProblemCount {
 			//Go on to the second line
 			stackx[ 0 ] = x;
 			stacklevel = 1;
-			solve( 1 );
+			solve();
 
 			unusedDescendingDiagonals[ diag2 ] = true;
 			unusedAscendingDiagonals[ diag1 ] = true;
@@ -104,7 +104,7 @@ public class NQueensProblemCount {
 			//Go on to the second line
 			stacklevel = 1;
 			stackx[ 0 ] = x;
-			solve( 1 );
+			solve();
 
 			unusedDescendingDiagonals[ diag2 ] = true;
 			unusedAscendingDiagonals[ diag1 ] = true;
@@ -114,10 +114,8 @@ public class NQueensProblemCount {
 
 	/**
 	 * Solving recursive method, do a depth-first/back-tracking algorithm
-	 *
-	 * @param y number of the line stating at 0
 	 */
-	private void solve( int y ) {
+	private void solve() {
 
 		int x=-1;
 		while( stacklevel > 0 ) {
@@ -146,7 +144,7 @@ public class NQueensProblemCount {
 					if( stacklevel >= chessboardSize ) {
 						solutionCount++;
 
-						x = chessboardSize - 1;
+						x = chessboardSizeMinusOne;
 					}
 					else {
 						x = -1;
