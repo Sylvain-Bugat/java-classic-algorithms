@@ -7,7 +7,7 @@ import gnu.getopt.Getopt;
  *
  * Time on Intel Q6600 CPU:
  * 8       9         10       11       12       13       14       15        16
- * 0m1.883s 0m0.122s 0m0.114s 0m0.122s 0m0.157s 0m0.378s 0m1.607s 0m10.414s 1m5.899s
+ * 0m0.134s 0m0.117s 0m0.124s 0m0.128s 0m0.142s 0m0.314s 0m1.253s 0m8.072s 0m50.754s
  *
  * @author Sylvain Bugat
  *
@@ -103,29 +103,25 @@ public class NQueensProblemCountBitFlagsIterative {
 			//Test all square of the line
 			x++;
 
-			//if the row is not already blocked by another queen
-			if( ( unusedColumns & ( 1L << x ) ) == 0 ) {
+			//if the row is not already blocked by another queen and if both diagonals are not already blocked by anothers queens
+			if( ( unusedColumns & ( 1 << x ) ) + ( unusedAscendingDiagonals & ( 1L << diagonalShifting + x ) ) + ( unusedDescendingDiagonals & ( 1L << diagonalShifting + x ) ) == 0 ) {
 
-				//if both diagonals are not already blocked by anothers queens
-				if( ( unusedAscendingDiagonals & ( 1L << diagonalShifting + x ) ) == 0 && ( unusedDescendingDiagonals & ( 1L << diagonalShifting + x ) ) == 0 ) {
+				stackx[ stacklevel ] = x;
 
-					stackx[ stacklevel ] = x;
+				unusedColumns = unusedColumns | ( 1 << x );
+				unusedAscendingDiagonals = ( unusedAscendingDiagonals | ( 1L << diagonalShifting + x ) ) << 1;
+				unusedDescendingDiagonals = ( unusedDescendingDiagonals | ( 1L << diagonalShifting + x ) ) >> 1;
 
-					unusedColumns = unusedColumns | ( 1 << x );
-					unusedAscendingDiagonals = ( unusedAscendingDiagonals | ( 1L << diagonalShifting + x ) ) << 1;
-					unusedDescendingDiagonals = ( unusedDescendingDiagonals | ( 1L << diagonalShifting + x ) ) >> 1;
+				stacklevel ++;
 
-					stacklevel ++;
+				//All queens are sets on the chessboard then a solution is found!
+				if( stacklevel >= chessboardSize ) {
+					solutionCount++;
 
-					//All queens are sets on the chessboard then a solution is found!
-					if( stacklevel >= chessboardSize ) {
-						solutionCount++;
-
-						x = chessboardSizeMinusOne;
-					}
-					else {
-						x = -1;
-					}
+					x = chessboardSizeMinusOne;
+				}
+				else {
+					x = -1;
 				}
 			}
 
