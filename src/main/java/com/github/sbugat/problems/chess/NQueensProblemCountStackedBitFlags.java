@@ -7,7 +7,7 @@ import gnu.getopt.Getopt;
  *
  * Time on Intel Q6600 CPU:
  * 8       9         10       11       12       13       14       15        16
- * 0m2.552s 0m0.129s 0m0.131s 0m0.133s 0m0.145s 0m0.306s 0m1.358s 0m7.834s 0m49.572s
+ * 0m0.138s 0m0.113s 0m0.132s 0m0.138s 0m0.147s 0m0.302s 0m1.346s 0m7.614s 0m48.218s
  *
  * @author Sylvain Bugat
  *
@@ -98,7 +98,7 @@ public class NQueensProblemCountStackedBitFlags {
 			x++;
 
 			//if the row is not already blocked by another queen and if both diagonals are not already blocked by anothers queens
-			if( ( unusedColumnsStack[ stacklevel ] & ( 1 << x ) ) + ( unusedAscendingDiagonalsStack[ stacklevel ] & ( 1 << x ) ) + ( unusedDescendingDiagonalsStack[ stacklevel ] & ( 1 << x ) ) == 0 ) {
+			if( ( ( 1 << x ) & ( unusedColumnsStack[ stacklevel ] | unusedAscendingDiagonalsStack[ stacklevel ] | unusedDescendingDiagonalsStack[ stacklevel ] ) ) == 0 ) {
 
 				//All queens are sets on the chessboard then a solution is found!
 				if( stacklevel + 1 >= chessboardSizeMinusOne ) {
