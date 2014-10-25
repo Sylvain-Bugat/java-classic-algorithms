@@ -7,7 +7,7 @@ import gnu.getopt.Getopt;
  *
  * Time on Intel Q6600 CPU:
  * 8       9         10       11       12       13       14       15        16
- * 0m0.136s 0m0.103s 0m0.116s 0m0.134s 0m0.131s 0m0.166s 0m0.414s 0m2.109s 0m12.499s
+ * 0m0.169s 0m0.124s 0m0.118s 0m0.127s 0m0.143s 0m0.159s 0m0.374s 0m1.678s 0m9.863s
  *
  * @author Sylvain Bugat
  *
@@ -97,14 +97,14 @@ public class NQueensProblemCountStackedBitFlags {
 	}
 
 	/**
-	 * Solving recursive method, do a depth-first/back-tracking algorithm
+	 * Solving with iterative/stacking method, do a depth-first/back-tracking algorithm
 	 */
 	private void solve( int bitFlags ) {
 
-		while( stacklevel > -1 ) {
+		while( true ) {
 
 			//Test first possible queen of the line
-			int targetQueen = Integer.highestOneBit( ~( bitFlags ) & bitFlagsMask );
+			int targetQueen = -( ~( bitFlags ) & bitFlagsMask ) & ( ~( bitFlags ) & bitFlagsMask );
 			//if the row is not already blocked by another queen and if both diagonals are not already blocked by anothers queens
 			if( targetQueen != 0 ) {
 
@@ -126,7 +126,7 @@ public class NQueensProblemCountStackedBitFlags {
 				}
 			}
 
-			while( bitFlags == bitFlagsMask ) {
+			while( bitFlags >= bitFlagsMask ) {
 
 				if( stacklevel > 0 ) {
 					bitFlags = bitFlagsStack[ stacklevel ];
