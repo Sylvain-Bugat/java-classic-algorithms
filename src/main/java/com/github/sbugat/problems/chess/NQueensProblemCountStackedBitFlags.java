@@ -7,7 +7,7 @@ import gnu.getopt.Getopt;
  *
  * Time on Intel Q6600 CPU:
  * 8       9         10       11       12       13       14       15        16
- * 0m0.109s 0m0.109s 0m0.115s 0m0.121s 0m0.127s 0m0.145s 0m0.354s 0m1.584s 0m8.727s
+ * 0m0.099s 0m0.108s 0m0.113s 0m0.119s 0m0.117s 0m0.152s 0m0.357s 0m1.497s 0m8.647s
  *
  * @author Sylvain Bugat
  *
@@ -61,7 +61,7 @@ public class NQueensProblemCountStackedBitFlags {
 			unusedColumnsStack[ 0 ] = 1 << x;
 			unusedAscendingDiagonalsStack[ 0 ] = ( 0b10 << x );
 			unusedDescendingDiagonalsStack[ 0 ] = ( 1 << x - 1 );
-			final int bitFlags = bitFlagsMask & ( unusedColumnsStack[ 0 ] | unusedAscendingDiagonalsStack[ 0 ] | unusedDescendingDiagonalsStack[ 0 ] );
+			final int bitFlags = bitFlagsMask & ~( unusedColumnsStack[ 0 ] | unusedAscendingDiagonalsStack[ 0 ] | unusedDescendingDiagonalsStack[ 0 ] );
 			bitFlagsStack[ 0 ] = bitFlags;
 
 			//Go on to the second line
@@ -81,7 +81,7 @@ public class NQueensProblemCountStackedBitFlags {
 			unusedAscendingDiagonalsStack[ 0 ] = ( 0b10 << x );
 			unusedDescendingDiagonalsStack[ 0 ] = ( 1 << x - 1 );
 
-			final int bitFlags = bitFlagsMask & ( unusedColumnsStack[ 0 ] | unusedAscendingDiagonalsStack[ 0 ] | unusedDescendingDiagonalsStack[ 0 ] );
+			final int bitFlags = bitFlagsMask & ~( unusedColumnsStack[ 0 ] | unusedAscendingDiagonalsStack[ 0 ] | unusedDescendingDiagonalsStack[ 0 ] );
 			bitFlagsStack[ 0 ] = bitFlags;
 
 			//Go on to the second line
@@ -102,24 +102,24 @@ public class NQueensProblemCountStackedBitFlags {
 		//Infinite loop, exit condition is tested when unstacking a queen
 		while( true ) {
 
-			//Test first possible queen of the line using direct inlining(manual code copy) of this method call: Integer.lowestOneBit( ~( bitFlags ) & bitFlagsMask );
+			//Test first possible queen of the line using direct inlining(manual code copy) of this method call: Integer.lowestOneBit( bitFlags );
 			//if the row is not already blocked by another queen and if both diagonals are not already blocked by anothers queens
 			//Don't need to test if targetQueen is not 0 because bitFlags has not been unstacked at the end of the loop (=contain at least one 0)
-			targetQueen = -( ~( bitFlags ) & bitFlagsMask ) & ( ~( bitFlags ) & bitFlagsMask );
+			targetQueen = -( bitFlags ) & ( bitFlags );
 
 			//All queens are sets on the chessboard then a solution is found!
 			//Test with the board size minus 2 because the targeted queen is not placed yet
 			if( stacklevel >= chessboardSizeMinusTwo ) {
 				solutionCount++;
 
-				bitFlags |= targetQueen;
+				bitFlags ^= targetQueen;
 			}
 			else {
 
 				//Go on to the next line
 				prevStacklevel = stacklevel++;
 				//Mark the current target queen as tested for this stack level
-				bitFlagsStack[ stacklevel ] = bitFlags | targetQueen;
+				bitFlagsStack[ stacklevel ] = bitFlags ^ targetQueen;
 
 				//unusedColumnsStack[ stacklevel ] = unusedColumnsStack[ prevStacklevel ] | targetQueen;
 				//unusedAscendingDiagonalsStack[ stacklevel ] = ( unusedAscendingDiagonalsStack[ prevStacklevel ] | targetQueen ) << 1;
@@ -127,14 +127,14 @@ public class NQueensProblemCountStackedBitFlags {
 				//bitFlags = bitFlagsMask & ( unusedColumnsStack[ stacklevel ] | unusedAscendingDiagonalsStack[ stacklevel ] | unusedDescendingDiagonalsStack[ stacklevel ] );
 
 				//Update bit flags and do 3 stacks updates (4 previous commented lines in 1)
-				bitFlags = bitFlagsMask & ( ( unusedColumnsStack[ stacklevel ] = unusedColumnsStack[ prevStacklevel ] | targetQueen )
+				bitFlags = bitFlagsMask & ~( ( unusedColumnsStack[ stacklevel ] = unusedColumnsStack[ prevStacklevel ] | targetQueen )
 						| ( unusedAscendingDiagonalsStack[ stacklevel ] = ( unusedAscendingDiagonalsStack[ prevStacklevel ] | targetQueen ) << 1 )
 						| ( unusedDescendingDiagonalsStack[ stacklevel ] = ( unusedDescendingDiagonalsStack[ prevStacklevel ] | targetQueen ) >> 1 )
 						);
 			}
 
 			//If all positions have been tested or are already blocked by a column or a diagonal
-			while( bitFlags >= bitFlagsMask ) {
+			while( bitFlags == 0 ) {
 
 				//If there is still something to unstack
 				if( stacklevel > 0 ) {
@@ -147,8 +147,6 @@ public class NQueensProblemCountStackedBitFlags {
 					return;
 				}
 			}
-
-
 		}
 	}
 
