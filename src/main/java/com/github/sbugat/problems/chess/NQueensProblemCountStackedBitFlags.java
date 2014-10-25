@@ -7,7 +7,7 @@ import gnu.getopt.Getopt;
  *
  * Time on Intel Q6600 CPU:
  * 8       9         10       11       12       13       14       15        16
- * 0m0.135s 0m0.108s 0m0.113s 0m0.120s 0m0.114s 0m0.147s 0m0.342s 0m1.510s 0m8.796s
+ * 0m0.109s 0m0.109s 0m0.115s 0m0.121s 0m0.127s 0m0.145s 0m0.354s 0m1.584s 0m8.727s
  *
  * @author Sylvain Bugat
  *
@@ -104,20 +104,22 @@ public class NQueensProblemCountStackedBitFlags {
 
 			//Test first possible queen of the line using direct inlining(manual code copy) of this method call: Integer.lowestOneBit( ~( bitFlags ) & bitFlagsMask );
 			//if the row is not already blocked by another queen and if both diagonals are not already blocked by anothers queens
+			//Don't need to test if targetQueen is not 0 because bitFlags has not been unstacked at the end of the loop (=contain at least one 0)
 			targetQueen = -( ~( bitFlags ) & bitFlagsMask ) & ( ~( bitFlags ) & bitFlagsMask );
-
-			//Mark the current target queen as tested for this stack level
-			bitFlags |= targetQueen;
 
 			//All queens are sets on the chessboard then a solution is found!
 			//Test with the board size minus 2 because the targeted queen is not placed yet
 			if( stacklevel >= chessboardSizeMinusTwo ) {
 				solutionCount++;
+
+				bitFlags |= targetQueen;
 			}
 			else {
 
+				//Go on to the next line
 				prevStacklevel = stacklevel++;
-				bitFlagsStack[ stacklevel ] = bitFlags;
+				//Mark the current target queen as tested for this stack level
+				bitFlagsStack[ stacklevel ] = bitFlags | targetQueen;
 
 				//unusedColumnsStack[ stacklevel ] = unusedColumnsStack[ prevStacklevel ] | targetQueen;
 				//unusedAscendingDiagonalsStack[ stacklevel ] = ( unusedAscendingDiagonalsStack[ prevStacklevel ] | targetQueen ) << 1;
@@ -145,6 +147,8 @@ public class NQueensProblemCountStackedBitFlags {
 					return;
 				}
 			}
+
+
 		}
 	}
 
