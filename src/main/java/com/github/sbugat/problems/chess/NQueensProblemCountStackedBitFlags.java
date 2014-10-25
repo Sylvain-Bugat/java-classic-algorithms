@@ -7,7 +7,7 @@ import gnu.getopt.Getopt;
  *
  * Time on Intel Q6600 CPU:
  * 8       9         10       11       12       13       14       15        16
- * 0m0.151s 0m0.114s 0m0.112s 0m0.121s 0m0.127s 0m0.151s 0m0.328s 0m1.549s 0m8.948s
+ * 0m0.135s 0m0.108s 0m0.113s 0m0.120s 0m0.114s 0m0.147s 0m0.342s 0m1.510s 0m8.796s
  *
  * @author Sylvain Bugat
  *
@@ -26,7 +26,7 @@ public class NQueensProblemCountStackedBitFlags {
 	private final int [] unusedColumnsStack;
 	private final int [] unusedAscendingDiagonalsStack;
 	private final int [] unusedDescendingDiagonalsStack;
-	private int stacklevel=1;
+	private int stacklevel=0;
 
 	public NQueensProblemCountStackedBitFlags( final int chessboardSizeArg ) {
 
@@ -98,38 +98,37 @@ public class NQueensProblemCountStackedBitFlags {
 	private void solve( int bitFlags ) {
 
 		int prevStacklevel = stacklevel - 1;
+		int targetQueen;
 		//Infinite loop, exit condition is tested when unstacking a queen
 		while( true ) {
 
 			//Test first possible queen of the line using direct inlining(manual code copy) of this method call: Integer.lowestOneBit( ~( bitFlags ) & bitFlagsMask );
-			int targetQueen = -( ~( bitFlags ) & bitFlagsMask ) & ( ~( bitFlags ) & bitFlagsMask );
 			//if the row is not already blocked by another queen and if both diagonals are not already blocked by anothers queens
-			if( targetQueen != 0 ) {
+			targetQueen = -( ~( bitFlags ) & bitFlagsMask ) & ( ~( bitFlags ) & bitFlagsMask );
 
-				//Mark the current target queen as tested for this stack level
-				bitFlags |= targetQueen;
+			//Mark the current target queen as tested for this stack level
+			bitFlags |= targetQueen;
 
-				//All queens are sets on the chessboard then a solution is found!
-				//Test with the board size minus 2 because the targeted queen is not placed yet
-				if( stacklevel >= chessboardSizeMinusTwo ) {
-					solutionCount++;
-				}
-				else {
+			//All queens are sets on the chessboard then a solution is found!
+			//Test with the board size minus 2 because the targeted queen is not placed yet
+			if( stacklevel >= chessboardSizeMinusTwo ) {
+				solutionCount++;
+			}
+			else {
 
-					prevStacklevel = stacklevel++;
-					bitFlagsStack[ stacklevel ] = bitFlags;
+				prevStacklevel = stacklevel++;
+				bitFlagsStack[ stacklevel ] = bitFlags;
 
-					//unusedColumnsStack[ stacklevel ] = unusedColumnsStack[ prevStacklevel ] | targetQueen;
-					//unusedAscendingDiagonalsStack[ stacklevel ] = ( unusedAscendingDiagonalsStack[ prevStacklevel ] | targetQueen ) << 1;
-					//unusedDescendingDiagonalsStack[ stacklevel ] = ( unusedDescendingDiagonalsStack[ prevStacklevel ] | targetQueen ) >> 1;
-					//bitFlags = bitFlagsMask & ( unusedColumnsStack[ stacklevel ] | unusedAscendingDiagonalsStack[ stacklevel ] | unusedDescendingDiagonalsStack[ stacklevel ] );
+				//unusedColumnsStack[ stacklevel ] = unusedColumnsStack[ prevStacklevel ] | targetQueen;
+				//unusedAscendingDiagonalsStack[ stacklevel ] = ( unusedAscendingDiagonalsStack[ prevStacklevel ] | targetQueen ) << 1;
+				//unusedDescendingDiagonalsStack[ stacklevel ] = ( unusedDescendingDiagonalsStack[ prevStacklevel ] | targetQueen ) >> 1;
+				//bitFlags = bitFlagsMask & ( unusedColumnsStack[ stacklevel ] | unusedAscendingDiagonalsStack[ stacklevel ] | unusedDescendingDiagonalsStack[ stacklevel ] );
 
-					//Update bit flags and do 3 stacks updates (4 previous commented lines in 1)
-					bitFlags = bitFlagsMask & ( ( unusedColumnsStack[ stacklevel ] = unusedColumnsStack[ prevStacklevel ] | targetQueen )
-												| ( unusedAscendingDiagonalsStack[ stacklevel ] = ( unusedAscendingDiagonalsStack[ prevStacklevel ] | targetQueen ) << 1 )
-												| ( unusedDescendingDiagonalsStack[ stacklevel ] = ( unusedDescendingDiagonalsStack[ prevStacklevel ] | targetQueen ) >> 1 )
-											);
-				}
+				//Update bit flags and do 3 stacks updates (4 previous commented lines in 1)
+				bitFlags = bitFlagsMask & ( ( unusedColumnsStack[ stacklevel ] = unusedColumnsStack[ prevStacklevel ] | targetQueen )
+						| ( unusedAscendingDiagonalsStack[ stacklevel ] = ( unusedAscendingDiagonalsStack[ prevStacklevel ] | targetQueen ) << 1 )
+						| ( unusedDescendingDiagonalsStack[ stacklevel ] = ( unusedDescendingDiagonalsStack[ prevStacklevel ] | targetQueen ) >> 1 )
+						);
 			}
 
 			//If all positions have been tested or are already blocked by a column or a diagonal
