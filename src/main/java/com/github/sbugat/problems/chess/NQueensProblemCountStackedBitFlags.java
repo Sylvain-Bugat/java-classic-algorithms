@@ -27,6 +27,7 @@ public class NQueensProblemCountStackedBitFlags {
 	private final int chessboardSize;
 	private final int chessboardSizeMinusOne;
 
+	private final int [] bitFlagsStack;
 	private final int [] stackx;
 	private final int [] unusedColumnsStack;
 	private final int [] unusedAscendingDiagonalsStack;
@@ -38,6 +39,7 @@ public class NQueensProblemCountStackedBitFlags {
 		chessboardSize = chessboardSizeArg;
 		chessboardSizeMinusOne = chessboardSizeArg - 1;
 
+		bitFlagsStack = new int[ chessboardSizeArg ];
 		stackx = new int[ chessboardSizeArg ];
 		unusedColumnsStack = new int[ chessboardSizeArg ];
 		unusedAscendingDiagonalsStack = new int[ chessboardSizeArg ];
@@ -61,11 +63,13 @@ public class NQueensProblemCountStackedBitFlags {
 			unusedColumnsStack[ 0 ] = 1 << x;
 			unusedAscendingDiagonalsStack[ 0 ] = ( 0b10 << x );
 			unusedDescendingDiagonalsStack[ 0 ] = ( 1 << x - 1 );
+			final int bitFlags = unusedColumnsStack[ 0 ] | unusedAscendingDiagonalsStack[ 0 ] | unusedDescendingDiagonalsStack[ 0 ];
+			bitFlagsStack[ 0 ] = bitFlags;
 
 			//Go on to the second line
 			stackx[ 0 ] = x;
 			stacklevel = 0;
-			solve();
+			solve( bitFlags );
 		}
 
 		//Multiply by 2 the solution count for the other half not calculated
@@ -80,17 +84,20 @@ public class NQueensProblemCountStackedBitFlags {
 			unusedAscendingDiagonalsStack[ 0 ] = ( 0b10 << x );
 			unusedDescendingDiagonalsStack[ 0 ] = ( 1 << x - 1 );
 
+			final int bitFlags = unusedColumnsStack[ 0 ] | unusedAscendingDiagonalsStack[ 0 ] | unusedDescendingDiagonalsStack[ 0 ];
+			bitFlagsStack[ 0 ] = bitFlags;
+
 			//Go on to the second line
 			stackx[ 0 ] = x;
 			stacklevel = 0;
-			solve();
+			solve( bitFlags );
 		}
 	}
 
 	/**
 	 * Solving recursive method, do a depth-first/back-tracking algorithm
 	 */
-	private void solve() {
+	private void solve( int bitFlags ) {
 
 		int x=-1;
 		while( stacklevel > -1 ) {
