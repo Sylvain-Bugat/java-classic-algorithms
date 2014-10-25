@@ -7,25 +7,19 @@ import gnu.getopt.Getopt;
  *
  * Time on Intel Q6600 CPU:
  * 8       9         10       11       12       13       14       15        16
- * 0m0.169s 0m0.124s 0m0.118s 0m0.127s 0m0.143s 0m0.159s 0m0.374s 0m1.678s 0m9.863s
+ * 0m0.133s 0m0.107s 0m0.118s 0m0.115s 0m0.134s 0m0.147s 0m0.326s 0m1.534s 0m9.006s
  *
  * @author Sylvain Bugat
  *
  */
 public class NQueensProblemCountStackedBitFlags {
 
-	/**long bits flag to mark unused columns*/
-	//private int unusedColumns;
-	/**long bits flag to mark unused ascending diagonals, first */
-	//private long unusedAscendingDiagonals;
-	/**long bits flag to mark unused descending diagonals */
-	//private long unusedDescendingDiagonals;
 	/**Number of solution counter*/
 	private long solutionCount;
 
 	/**Size of the chess board*/
 	private final int chessboardSize;
-	private final int chessboardSizeMinusOne;
+	private final int chessboardSizeMinusTwo;
 
 	private final int [] bitFlagsStack;
 	private int bitFlagsMask;
@@ -37,7 +31,7 @@ public class NQueensProblemCountStackedBitFlags {
 	public NQueensProblemCountStackedBitFlags( final int chessboardSizeArg ) {
 
 		chessboardSize = chessboardSizeArg;
-		chessboardSizeMinusOne = chessboardSizeArg - 1;
+		chessboardSizeMinusTwo = chessboardSizeArg - 2;
 
 		bitFlagsStack = new int[ chessboardSizeArg ];
 
@@ -111,7 +105,7 @@ public class NQueensProblemCountStackedBitFlags {
 				bitFlags |= targetQueen;
 
 				//All queens are sets on the chessboard then a solution is found!
-				if( stacklevel + 1 >= chessboardSizeMinusOne ) {
+				if( stacklevel >= chessboardSizeMinusTwo ) {
 					solutionCount++;
 				}
 				else {
@@ -119,19 +113,29 @@ public class NQueensProblemCountStackedBitFlags {
 					final int prevStacklevel = stacklevel++;
 					bitFlagsStack[ stacklevel ] = bitFlags;
 
-					unusedColumnsStack[ stacklevel ] = unusedColumnsStack[ prevStacklevel ] | targetQueen;
-					unusedAscendingDiagonalsStack[ stacklevel ] = ( unusedAscendingDiagonalsStack[ prevStacklevel ] | targetQueen ) << 1;
-					unusedDescendingDiagonalsStack[ stacklevel ] = ( unusedDescendingDiagonalsStack[ prevStacklevel ] | targetQueen ) >> 1;
-					bitFlags = bitFlagsMask & ( unusedColumnsStack[ stacklevel ] | unusedAscendingDiagonalsStack[ stacklevel ] | unusedDescendingDiagonalsStack[ stacklevel ] );
+					//unusedColumnsStack[ stacklevel ] = unusedColumnsStack[ prevStacklevel ] | targetQueen;
+					//unusedAscendingDiagonalsStack[ stacklevel ] = ( unusedAscendingDiagonalsStack[ prevStacklevel ] | targetQueen ) << 1;
+					//unusedDescendingDiagonalsStack[ stacklevel ] = ( unusedDescendingDiagonalsStack[ prevStacklevel ] | targetQueen ) >> 1;
+					//bitFlags = bitFlagsMask & ( unusedColumnsStack[ stacklevel ] | unusedAscendingDiagonalsStack[ stacklevel ] | unusedDescendingDiagonalsStack[ stacklevel ] );
+
+					//Update bit flags and do 3 stacks updates (4 previous commented lines in 1)
+					bitFlags = bitFlagsMask & ( ( unusedColumnsStack[ stacklevel ] = unusedColumnsStack[ prevStacklevel ] | targetQueen )
+												| ( unusedAscendingDiagonalsStack[ stacklevel ] = ( unusedAscendingDiagonalsStack[ prevStacklevel ] | targetQueen ) << 1 )
+												| ( unusedDescendingDiagonalsStack[ stacklevel ] = ( unusedDescendingDiagonalsStack[ prevStacklevel ] | targetQueen ) >> 1 )
+											);
 				}
 			}
 
+			//If all positions have been tested or are already blocked by a column or a diagonal
 			while( bitFlags >= bitFlagsMask ) {
 
+				//If there is still something to unstack
 				if( stacklevel > 0 ) {
+					//Backtrace process
 					bitFlags = bitFlagsStack[ stacklevel ];
 					stacklevel --;
 				}
+				//Exit if all possibilities are tested
 				else {
 					return;
 				}
