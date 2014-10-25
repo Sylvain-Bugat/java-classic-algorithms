@@ -7,7 +7,7 @@ import gnu.getopt.Getopt;
  *
  * Time on Intel Q6600 CPU:
  * 8       9         10       11       12       13       14       15        16
- * 0m0.148s 0m0.101s 0m0.118s 0m0.132s 0m0.136s 0m0.180s 0m0.449s 0m2.325s 0m14.086s
+ * 0m0.136s 0m0.103s 0m0.116s 0m0.134s 0m0.131s 0m0.166s 0m0.414s 0m2.109s 0m12.499s
  *
  * @author Sylvain Bugat
  *
@@ -29,7 +29,6 @@ public class NQueensProblemCountStackedBitFlags {
 
 	private final int [] bitFlagsStack;
 	private int bitFlagsMask;
-	private final int [] stackx;
 	private final int [] unusedColumnsStack;
 	private final int [] unusedAscendingDiagonalsStack;
 	private final int [] unusedDescendingDiagonalsStack;
@@ -46,7 +45,6 @@ public class NQueensProblemCountStackedBitFlags {
 			bitFlagsMask |= 1 << i;
 		}
 
-		stackx = new int[ chessboardSizeArg ];
 		unusedColumnsStack = new int[ chessboardSizeArg ];
 		unusedAscendingDiagonalsStack = new int[ chessboardSizeArg ];
 		unusedDescendingDiagonalsStack = new int[ chessboardSizeArg ];
@@ -73,7 +71,6 @@ public class NQueensProblemCountStackedBitFlags {
 			bitFlagsStack[ 0 ] = bitFlags;
 
 			//Go on to the second line
-			stackx[ 0 ] = x;
 			stacklevel = 0;
 			solve( bitFlags );
 		}
@@ -94,7 +91,6 @@ public class NQueensProblemCountStackedBitFlags {
 			bitFlagsStack[ 0 ] = bitFlags;
 
 			//Go on to the second line
-			stackx[ 0 ] = x;
 			stacklevel = 0;
 			solve( bitFlags );
 		}
@@ -105,11 +101,9 @@ public class NQueensProblemCountStackedBitFlags {
 	 */
 	private void solve( int bitFlags ) {
 
-		int x=-1;
 		while( stacklevel > -1 ) {
-			//Test all square of the line
-			x++;
 
+			//Test first possible queen of the line
 			int targetQueen = Integer.highestOneBit( ~( bitFlags ) & bitFlagsMask );
 			//if the row is not already blocked by another queen and if both diagonals are not already blocked by anothers queens
 			if( targetQueen != 0 ) {
@@ -119,27 +113,22 @@ public class NQueensProblemCountStackedBitFlags {
 				//All queens are sets on the chessboard then a solution is found!
 				if( stacklevel + 1 >= chessboardSizeMinusOne ) {
 					solutionCount++;
-
-					x = chessboardSizeMinusOne;
 				}
 				else {
 
 					final int prevStacklevel = stacklevel++;
-					stackx[ stacklevel ] = x;
 					bitFlagsStack[ stacklevel ] = bitFlags;
 
 					unusedColumnsStack[ stacklevel ] = unusedColumnsStack[ prevStacklevel ] | targetQueen;
 					unusedAscendingDiagonalsStack[ stacklevel ] = ( unusedAscendingDiagonalsStack[ prevStacklevel ] | targetQueen ) << 1;
 					unusedDescendingDiagonalsStack[ stacklevel ] = ( unusedDescendingDiagonalsStack[ prevStacklevel ] | targetQueen ) >> 1;
 					bitFlags = bitFlagsMask & ( unusedColumnsStack[ stacklevel ] | unusedAscendingDiagonalsStack[ stacklevel ] | unusedDescendingDiagonalsStack[ stacklevel ] );
-					x = -1;
 				}
 			}
 
 			while( bitFlags == bitFlagsMask ) {
 
 				if( stacklevel > 0 ) {
-					x = stackx[ stacklevel ];
 					bitFlags = bitFlagsStack[ stacklevel ];
 					stacklevel --;
 				}
