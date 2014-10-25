@@ -7,7 +7,7 @@ import gnu.getopt.Getopt;
  *
  * Time on Intel Q6600 CPU:
  * 8       9         10       11       12       13       14       15        16
- * 0m0.133s 0m0.107s 0m0.118s 0m0.115s 0m0.134s 0m0.147s 0m0.326s 0m1.534s 0m9.006s
+ * 0m0.151s 0m0.114s 0m0.112s 0m0.121s 0m0.127s 0m0.151s 0m0.328s 0m1.549s 0m8.948s
  *
  * @author Sylvain Bugat
  *
@@ -91,26 +91,32 @@ public class NQueensProblemCountStackedBitFlags {
 	}
 
 	/**
-	 * Solving with iterative/stacking method, do a depth-first/back-tracking algorithm
+	 * Solving with iterative/stacking method by using bit flags, do a depth-first/back-tracking algorithm
+	 *
+	 * @param initial bitFlag with a single queen on the first line
 	 */
 	private void solve( int bitFlags ) {
 
+		int prevStacklevel = stacklevel - 1;
+		//Infinite loop, exit condition is tested when unstacking a queen
 		while( true ) {
 
-			//Test first possible queen of the line
+			//Test first possible queen of the line using direct inlining(manual code copy) of this method call: Integer.lowestOneBit( ~( bitFlags ) & bitFlagsMask );
 			int targetQueen = -( ~( bitFlags ) & bitFlagsMask ) & ( ~( bitFlags ) & bitFlagsMask );
 			//if the row is not already blocked by another queen and if both diagonals are not already blocked by anothers queens
 			if( targetQueen != 0 ) {
 
+				//Mark the current target queen as tested for this stack level
 				bitFlags |= targetQueen;
 
 				//All queens are sets on the chessboard then a solution is found!
+				//Test with the board size minus 2 because the targeted queen is not placed yet
 				if( stacklevel >= chessboardSizeMinusTwo ) {
 					solutionCount++;
 				}
 				else {
 
-					final int prevStacklevel = stacklevel++;
+					prevStacklevel = stacklevel++;
 					bitFlagsStack[ stacklevel ] = bitFlags;
 
 					//unusedColumnsStack[ stacklevel ] = unusedColumnsStack[ prevStacklevel ] | targetQueen;
