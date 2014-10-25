@@ -7,7 +7,7 @@ import gnu.getopt.Getopt;
  *
  * Time on Intel Q6600 CPU:
  * 8       9         10       11       12       13       14       15        16
- * 0m0.138s 0m0.113s 0m0.132s 0m0.138s 0m0.147s 0m0.302s 0m1.346s 0m7.614s 0m48.218s
+ * 0m0.134s 0m0.122s 0m0.123s 0m0.134s 0m0.137s 0m0.251s 0m0.846s 0m5.310s 0m33.361s
  *
  * @author Sylvain Bugat
  *
@@ -105,7 +105,7 @@ public class NQueensProblemCountStackedBitFlags {
 			x++;
 
 			//if the row is not already blocked by another queen and if both diagonals are not already blocked by anothers queens
-			if( ( ( 1 << x ) & ( unusedColumnsStack[ stacklevel ] | unusedAscendingDiagonalsStack[ stacklevel ] | unusedDescendingDiagonalsStack[ stacklevel ] ) ) == 0 ) {
+			if( ( ( 1 << x ) & bitFlags ) == 0 ) {
 
 				//All queens are sets on the chessboard then a solution is found!
 				if( stacklevel + 1 >= chessboardSizeMinusOne ) {
@@ -117,10 +117,12 @@ public class NQueensProblemCountStackedBitFlags {
 
 					final int prevStacklevel = stacklevel++;
 					stackx[ stacklevel ] = x;
+					bitFlagsStack[ stacklevel ] = bitFlags;
 
 					unusedColumnsStack[ stacklevel ] = unusedColumnsStack[ prevStacklevel ] | ( 1 << x );
 					unusedAscendingDiagonalsStack[ stacklevel ] = ( unusedAscendingDiagonalsStack[ prevStacklevel ] | ( 1 << x ) ) << 1;
 					unusedDescendingDiagonalsStack[ stacklevel ] = ( unusedDescendingDiagonalsStack[ prevStacklevel ] | ( 1 << x ) ) >> 1;
+					bitFlags = unusedColumnsStack[ stacklevel ] | unusedAscendingDiagonalsStack[ stacklevel ] | unusedDescendingDiagonalsStack[ stacklevel ];
 					x = -1;
 				}
 			}
@@ -129,6 +131,7 @@ public class NQueensProblemCountStackedBitFlags {
 
 				if( stacklevel > 0 ) {
 					x = stackx[ stacklevel ];
+					bitFlags = bitFlagsStack[ stacklevel ];
 					stacklevel --;
 				}
 				else {
