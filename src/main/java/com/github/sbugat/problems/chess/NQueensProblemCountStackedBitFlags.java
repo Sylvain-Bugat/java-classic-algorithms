@@ -1,5 +1,7 @@
 package com.github.sbugat.problems.chess;
 
+import org.apache.commons.lang3.StringUtils;
+
 import gnu.getopt.Getopt;
 
 /**
@@ -21,6 +23,8 @@ public class NQueensProblemCountStackedBitFlags {
 	private final int chessboardSize;
 	private final int chessboardSizeMinusTwo;
 
+	private final boolean printSolutions;
+
 	private final int [] bitFlagsStack;
 	private int bitFlagsMask;
 	private final int [] unusedColumnsStack;
@@ -28,10 +32,12 @@ public class NQueensProblemCountStackedBitFlags {
 	private final int [] unusedDescendingDiagonalsStack;
 	private int stacklevel=0;
 
-	public NQueensProblemCountStackedBitFlags( final int chessboardSizeArg ) {
+	public NQueensProblemCountStackedBitFlags( final int chessboardSizeArg, final boolean printSolutionsArg ) {
 
 		chessboardSize = chessboardSizeArg;
 		chessboardSizeMinusTwo = chessboardSizeArg - 2;
+
+		printSolutions = printSolutionsArg;
 
 		bitFlagsStack = new int[ chessboardSizeArg ];
 
@@ -69,9 +75,6 @@ public class NQueensProblemCountStackedBitFlags {
 			solve( bitFlags );
 		}
 
-		//Multiply by 2 the solution count for the other half not calculated
-		solutionCount *= 2;
-
 		//If the cheesboard size is odd, test with a queen on the middle of the first line
 		if( 0 != chessboardSize % 2 ) {
 
@@ -81,17 +84,25 @@ public class NQueensProblemCountStackedBitFlags {
 			unusedAscendingDiagonalsStack[ 0 ] = ( 0b10 << x );
 			unusedDescendingDiagonalsStack[ 0 ] = ( 1 << x - 1 );
 
-			final int bitFlags = bitFlagsMask & ~( unusedColumnsStack[ 0 ] | unusedAscendingDiagonalsStack[ 0 ] | unusedDescendingDiagonalsStack[ 0 ] );
+			//just test next line half of possible position because or mirroring
+			int bitFlags = 0; //bitFlagsMask & ~( unusedColumnsStack[ 0 ] | unusedAscendingDiagonalsStack[ 0 ] | unusedDescendingDiagonalsStack[ 0 ] );
+			for(int i=0 ; i < x - 1 ; i++ ) {
+				bitFlags ^= 1 << i;
+			}
 			bitFlagsStack[ 0 ] = bitFlags;
 
 			//Go on to the second line
 			stacklevel = 0;
 			solve( bitFlags );
 		}
+
+		//Multiply by 2 the solution count for the other half not calculated
+		solutionCount *= 2;
 	}
 
 	/**
 	 * Solving with iterative/stacking method by using bit flags, do a depth-first/back-tracking algorithm
+	 * a queen must me placed on the first line
 	 *
 	 * @param initial bitFlag with a single queen on the first line
 	 */
@@ -111,6 +122,10 @@ public class NQueensProblemCountStackedBitFlags {
 			//Test with the board size minus 2 because the targeted queen is not placed yet
 			if( stacklevel >= chessboardSizeMinusTwo ) {
 				solutionCount++;
+
+				/*if( printSolutions ) {
+					print( targetQueen );
+				}*/
 
 				bitFlags ^= targetQueen;
 			}
@@ -151,17 +166,41 @@ public class NQueensProblemCountStackedBitFlags {
 	}
 
 	/**
-	 * Maisn program
+	 * Print a solution and mirror version
+	 *
+	 * @param targetQueen
+	 */
+	private void print( final int targetQueen ) {
+
+		System.out.println( "\nSolution number " + solutionCount + " and " + solutionCount + "bis :" );
+
+		String line = String.format( "%" + chessboardSize + "s", Integer.toBinaryString( unusedColumnsStack[ 0 ] ) ).replace( ' ', '0' );
+		System.out.println( line + "    " + StringUtils.reverse( line ) );
+
+		for( int i=1 ; i <= chessboardSizeMinusTwo ; i++ ) {
+
+			line = String.format( "%" + chessboardSize + "s", Integer.toBinaryString( unusedColumnsStack[i] - unusedColumnsStack[i - 1 ] ) ).replace( ' ', '0' );
+			System.out.println( line + "    " + StringUtils.reverse( line ) );
+		}
+
+		line = String.format( "%" + chessboardSize + "s", Integer.toBinaryString( targetQueen ) ).replace( ' ', '0' );
+		System.out.println( line + "    " + StringUtils.reverse( line ) );
+	}
+
+	/**
+	 * Main program
 	 *
 	 * @param args
 	 */
 	public static void main( final String args[] ) {
 
-		final Getopt getOpt = new Getopt( NQueensProblemCountStackedBitFlags.class.getSimpleName(), args, ":n:" );
+		final Getopt getOpt = new Getopt( NQueensProblemCountStackedBitFlags.class.getSimpleName(), args, ":n:p" );
 		getOpt.setOpterr( false );
 
 		//Default chessboard size
 		int chessBoardSize = 8;
+
+		boolean printSolutions = false;
 
 		int c = getOpt.getopt();
 		while( -1 != c )
@@ -183,6 +222,10 @@ public class NQueensProblemCountStackedBitFlags {
 				}
 				break;
 
+			case 'p':
+				printSolutions = true;
+				break;
+
 			case '?':
 			default:
 				System.err.println( "Usage: " + NQueensProblemCountStackedBitFlags.class.getSimpleName() + " [-n <size of the chessboard>]" );
@@ -192,6 +235,6 @@ public class NQueensProblemCountStackedBitFlags {
 			c = getOpt.getopt();
 		}
 
-		new NQueensProblemCountStackedBitFlags( chessBoardSize );
+		new NQueensProblemCountStackedBitFlags( chessBoardSize, printSolutions );
 	}
 }

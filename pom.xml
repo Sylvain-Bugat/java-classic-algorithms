@@ -24,6 +24,9 @@
 		<!-- Java GNU port of getopt-->
 		<gnu.getopt.version>1.0.13</gnu.getopt.version>
 
+		<!-- Commons library -->
+		<apache.commons.lang>3.3.2</apache.commons.lang>
+
 		<!-- Maven Lifecycle Plugins Version -->
 		<maven.pluginclean.version>2.6</maven.pluginclean.version>
 		<maven.plugininstall.version>2.5.2</maven.plugininstall.version>
@@ -43,6 +46,12 @@
 			<groupId>gnu.getopt</groupId>
 			<artifactId>java-getopt</artifactId>
 			<version>${gnu.getopt.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${apache.commons.lang}</version>
 		</dependency>
 	</dependencies>
 
