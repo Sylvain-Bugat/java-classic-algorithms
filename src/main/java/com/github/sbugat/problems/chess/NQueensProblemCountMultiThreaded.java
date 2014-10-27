@@ -67,8 +67,8 @@ public class NQueensProblemCountMultiThreaded implements Runnable{
 		if( x < chessboardSize/2 ){
 
 			unusedColumnsStack[ 0 ] = 1 << x;
-			unusedAscendingDiagonalsStack[ 0 ] = ( 0b10 << x );
-			unusedDescendingDiagonalsStack[ 0 ] = ( 1 << x - 1 );
+			unusedAscendingDiagonalsStack[ 0 ] = ( 1 << x ) << 1;
+			unusedDescendingDiagonalsStack[ 0 ] = ( 1 << x ) >> 1;
 			final int bitFlags = bitFlagsMask & ~( unusedColumnsStack[ 0 ] | unusedAscendingDiagonalsStack[ 0 ] | unusedDescendingDiagonalsStack[ 0 ] );
 			bitFlagsStack[ 0 ] = bitFlags;
 
@@ -82,8 +82,8 @@ public class NQueensProblemCountMultiThreaded implements Runnable{
 			final int x=chessboardSize/2;
 
 			unusedColumnsStack[ 0 ] = 1 << x;
-			unusedAscendingDiagonalsStack[ 0 ] = ( 0b10 << x );
-			unusedDescendingDiagonalsStack[ 0 ] = ( 1 << x - 1 );
+			unusedAscendingDiagonalsStack[ 0 ] = ( 1 << x ) << 1;
+			unusedDescendingDiagonalsStack[ 0 ] = ( 1 << x ) >> 1;
 
 			//just test next line half of possible position because or mirroring
 			int bitFlags = 0; //bitFlagsMask & ~( unusedColumnsStack[ 0 ] | unusedAscendingDiagonalsStack[ 0 ] | unusedDescendingDiagonalsStack[ 0 ] );
