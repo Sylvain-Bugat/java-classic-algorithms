@@ -3,9 +3,6 @@ package com.github.sbugat.problems.chess;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -289,25 +286,28 @@ public class NQueensProblemCountMultiThreaded implements Runnable{
 	 */
 	public static void launchMultiThread( final int chessBoardSize, final boolean printSolutions, final int threadNumber ) {
 
-		final ExecutorService executorService = Executors.newFixedThreadPool( threadNumber );
-
-		final List<NQueensProblemCountMultiThreaded> threadList = new ArrayList<>();
-
 		//Prepare a thread for each possible possition on the first half of the first line
-		initSolve( threadList, chessBoardSize );
+		initSolve( ThreadLauncher.threadList, chessBoardSize );
 
-		System.out.println( threadList.size() );
-		for( final NQueensProblemCountMultiThreaded thread : threadList ) {
-			executorService.execute( thread );
+		final List<NQueensProblemCountMultiThreaded> threadList = new ArrayList<>( ThreadLauncher.threadList );
+
+		final List<Thread> launchedThreadList = new ArrayList<>();
+		System.out.println( ThreadLauncher.threadList.size() );
+		for( int i=0 ; i< threadNumber ; i++ ) {
+
+			final Thread thread = new Thread( new ThreadLauncher() );
+			thread.start();
+
+			launchedThreadList.add( thread );
 		}
 
-		try {
-			executorService.shutdown();
-			executorService.awaitTermination( Integer.MAX_VALUE,  TimeUnit.DAYS );
-		}
-		catch ( final InterruptedException e) {
-			e.printStackTrace();
-			System.exit( 1 );
+		for( final Thread thread : launchedThreadList ) {
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		int solutionCount = 0;
@@ -390,5 +390,42 @@ public class NQueensProblemCountMultiThreaded implements Runnable{
 		}
 
 		launchMultiThread( chessBoardSize, printSolutions, threadNumber );
+	}
+
+	private static class ThreadLauncher implements Runnable {
+
+		static final List<NQueensProblemCountMultiThreaded> threadList = new ArrayList<>();
+
+		@Override
+		public void run() {
+
+			Runnable thread = getNextThread();
+			while( null != thread) {
+
+				final Thread launchedThread = new Thread( thread );
+				launchedThread.start();
+
+				try {
+					launchedThread.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				thread = getNextThread();
+			}
+		}
+
+		public static synchronized Runnable getNextThread() {
+
+			if( ! threadList.isEmpty() ) {
+				final Runnable nextThread = threadList.get( 0 );
+
+				threadList.remove( 0 );
+				return nextThread;
+			}
+
+			return null;
+		}
 	}
 }
