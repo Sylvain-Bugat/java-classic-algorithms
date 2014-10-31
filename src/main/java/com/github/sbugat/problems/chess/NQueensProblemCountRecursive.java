@@ -98,13 +98,13 @@ public class NQueensProblemCountRecursive {
 	}
 
 	/**
-	 * Solving recursive method, do a depth-first/back-tracking algorithm
+	 * Solving using recursive method, do a depth-first/back-tracking algorithm
 	 *
 	 * @param y number of the line stating at 0
 	 */
 	private void solve( final int y ) {
 
-		//Test all square of the line
+		//Test all position on the line
 		for( int x=0 ; x < chessboardSize ; x ++ ){
 
 			//if the row is not already blocked by another queen
