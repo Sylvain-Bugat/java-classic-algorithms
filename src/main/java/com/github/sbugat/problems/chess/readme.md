@@ -39,23 +39,60 @@ With the previous placed Queen 2 arrays can be defined to mark already blocked d
 
 With x and y going from 0 to 7, this code can be used:
 ```java
-descendingDiagnonal = x + y;
+ascendingDiagnonal = x + y;
 ```
 
 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 |
 | ------------- | ----------- | ------------- | ----------- | ------------- | ----------- | ------------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
-| :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :red_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: |
+| :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :red_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: |
 
 With x and y going from 0 to 7, this code can be used:
 ```java
-ascendingDiagnonal = x + 8 - 1 - y;
+descendingDiagnonal = x + 8 - 1 - y;
 ```
 
 ## with reccursive back-tracking algorithm
 | Complexity::white_check_mark: | Efficiency::warning: |
 | ---------- | ---------- |
-**The best complexity/efficiency method**:
+**The best complexity/efficiency method**
+
+Core algorithm:
 ```java
+	private void solve( final int y ) {
 
+		//Test all position on the line
+		for( int x=0 ; x < chessboardSize ; x ++ ){
+
+			//if the row is not already blocked by another queen
+			if( unusedColumns[x] ) {
+
+				final int diag1 = x + y;
+				final int diag2 = x + chessboardSizeMinusOne - y ;
+
+				//if both diagonals are not already blocked by anothers queens
+				if( unusedAscendingDiagonals[ diag1 ] && unusedDescendingDiagonals[ diag2 ] ) {
+
+					unusedColumns[ x ] = false;
+					unusedAscendingDiagonals[ diag1 ] = false;
+					unusedDescendingDiagonals[ diag2 ] = false;
+
+					//All queens are sets on the chessboard then a solution is found!
+					if( y >= chessboardSizeMinusOne ) {
+						solutionCount++;
+					}
+					else {
+						//Go on to the next line
+						solve( y + 1 );
+					}
+
+					unusedDescendingDiagonals[ diag2 ] = true;
+					unusedAscendingDiagonals[ diag1 ] = true;
+					unusedColumns[ x ] = true;
+				}
+			}
+		}
+	}
 ```
+This place a queen only if it can be done.
 
+Minor optimisation: the size of the chessboard minus one can be precalculated.
