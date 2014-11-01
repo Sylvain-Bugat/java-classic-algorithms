@@ -51,10 +51,10 @@ With x and y going from 0 to 7, this code can be used:
 descendingDiagnonal = x + 8 - 1 - y;
 ```
 
-## with reccursive back-tracking algorithm
+## with recursive back-tracking algorithm
 | Complexity::white_check_mark: | Efficiency::warning::warning: |
 | ---------- | ---------- |
-**The best trade between complexity and efficiency algorithm**
+**The best trade between complexity and efficiency algorithm**  
 Useds positions and contraints are stored in the stack and in global arrays.
 
 Core algorithm:
@@ -107,3 +107,71 @@ This place a queen only if it can be done.
 
 Optmized and complete algorithm can be found in this file: [NQueensProblemCountRecursive.java](NQueensProblemCountRecursive.java)
 
+## with iterative back-tracking algorithm
+
+| Complexity::warning: | Efficiency::warning: |
+| ---------- | ---------- |
+Used positions and contraints are stored in the stack array and in global arrays.
+
+Core algorithm:
+```java
+	private void solve() {
+
+		int x = -1;
+		while (stacklevel > 0) {
+			// Test all position of the line
+			x++;
+
+			// if the row is not already blocked by another queen
+			if (unusedColumns[x]) {
+
+				final int ascDiagonal = x + stacklevel;
+				final int descDiagonal = x + chessboardSize - 1 - stacklevel;
+
+				// if both diagonals are not already blocked by anothers queens
+				if (unusedAscendingDiagonals[ascDiagonal] && unusedDescendingDiagonals[descDiagonal]) {
+
+					unusedColumns[x] = false;
+					unusedAscendingDiagonals[ascDiagonal] = false;
+					unusedDescendingDiagonals[descDiagonal] = false;
+
+					// Stack a move
+					xStack[stacklevel] = x;
+					ascDiagonalStack[stacklevel] = ascDiagonal;
+					descDiagonalStack[stacklevel] = descDiagonal;
+					stacklevel++;
+
+					// All queens are sets on the chessboard then a solution is found!
+					if (stacklevel >= chessboardSize) {
+						solutionCount++;
+
+						// Force unstack
+						x = chessboardSizeMinusOne;
+					}
+					else {
+						// Go on to the next line on first position
+						x = -1;
+					}
+				}
+			}
+
+			// Back-tracking loop
+			while (x >= chessboardSize - 1) {
+
+				// Unstack if all line positation are tested
+				stacklevel--;
+				if (stacklevel > 0) {
+					unusedDescendingDiagonals[descDiagonalStack[stacklevel]] = true;
+					unusedAscendingDiagonals[ascDiagonalStack[stacklevel]] = true;
+					x = xStack[stacklevel];
+					unusedColumns[x] = true;
+				}
+				// Nothing to unstack, then exit
+				else {
+					return;
+				}
+			}
+		}
+	}
+```
+This algorithm is more complex but may be more efficent than the recursive algorithm.
