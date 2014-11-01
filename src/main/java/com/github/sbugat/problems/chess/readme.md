@@ -2,7 +2,7 @@
 ***
 Java programs to count and/or print solutions of the [N Queens puzzle on a NxN chess](http://en.wikipedia.org/wiki/Eight_queens_puzzle)
 
-## Keys
+## Keys to solving this puzzle
 
 Contraint programming is very efficient with this algorithm because lots of possibilities don't have to be tested.
 
@@ -52,42 +52,44 @@ descendingDiagnonal = x + 8 - 1 - y;
 ```
 
 ## with reccursive back-tracking algorithm
-| Complexity::white_check_mark: | Efficiency::warning: |
+| Complexity::white_check_mark: | Efficiency::warning::warning: |
 | ---------- | ---------- |
 **The best complexity/efficiency method**
 
 Core algorithm:
 ```java
-	private void solve( final int y ) {
+	private void solve(final int y) {
 
-		//Test all position on the line
-		for( int x=0 ; x < chessboardSize ; x ++ ){
+		// Test all position on the line
+		for (int x = 0; x < chessboardSize; x++) {
 
-			//if the row is not already blocked by another queen
-			if( unusedColumns[x] ) {
+			// if the row is not already blocked by another queen
+			if (unusedColumns[x]) {
 
-				final int diag1 = x + y;
-				final int diag2 = x + chessboardSizeMinusOne - y ;
+				final int ascDiagonal = x + y;
+				final int descDiagonal = x + chessboardSizeM - 1 - y;
 
-				//if both diagonals are not already blocked by anothers queens
-				if( unusedAscendingDiagonals[ diag1 ] && unusedDescendingDiagonals[ diag2 ] ) {
+				// if both diagonals are not already blocked by anothers queens
+				if (unusedAscendingDiagonals[ascDiagonal] && unusedDescendingDiagonals[descDiagonal]) {
 
-					unusedColumns[ x ] = false;
-					unusedAscendingDiagonals[ diag1 ] = false;
-					unusedDescendingDiagonals[ diag2 ] = false;
+					// Add contraints for this a queen
+					unusedColumns[x] = false;
+					unusedAscendingDiagonals[ascDiagonal] = false;
+					unusedDescendingDiagonals[descDiagonal] = false;
 
-					//All queens are sets on the chessboard then a solution is found!
-					if( y >= chessboardSizeMinusOne ) {
+					// All queens are sets on the chessboard then a solution is found!
+					if (y >= chessboardSizeMinusOne) {
 						solutionCount++;
 					}
 					else {
-						//Go on to the next line
-						solve( y + 1 );
+						// Go on to the next line
+						solve(y + 1);
 					}
 
-					unusedDescendingDiagonals[ diag2 ] = true;
-					unusedAscendingDiagonals[ diag1 ] = true;
-					unusedColumns[ x ] = true;
+					// Unadd contraints for this a queen (back-tracking)
+					unusedDescendingDiagonals[descDiagonal] = true;
+					unusedAscendingDiagonals[ascDiagonal] = true;
+					unusedColumns[x] = true;
 				}
 			}
 		}
@@ -95,4 +97,8 @@ Core algorithm:
 ```
 This place a queen only if it can be done.
 
-Minor optimisation: the size of the chessboard minus one can be precalculated.
+### possible optimisations
+| Complexity | Efficiency improvements | description
+| ---------- | ---------- | ---------- |
+| Very easy | minor | the size of the chessboard minus one can be precalculated |
+| Average | minor | only half of the possibilities can be scanned by mirroring found solutions |
