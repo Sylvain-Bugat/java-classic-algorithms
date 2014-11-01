@@ -102,38 +102,38 @@ public class NQueensProblemCountRecursive {
 	 *
 	 * @param y number of the line stating at 0
 	 */
-	private void solve( final int y ) {
+	private void solve(final int y) {
 
-		//Test all position on the line
-		for( int x=0 ; x < chessboardSize ; x ++ ){
+		// Test all position on the line
+		for (int x = 0; x < chessboardSize; x++) {
 
-			//if the row is not already blocked by another queen
-			if( unusedColumns[x] ) {
+			// if the row is not already blocked by another queen
+			if (unusedColumns[x]) {
 
 				final int ascDiagonal = x + y;
-				final int descDiagonal = x + chessboardSizeMinusOne - y ;
+				final int descDiagonal = x + chessboardSizeMinusOne - y;
 
-				//if both diagonals are not already blocked by anothers queens
-				if( unusedAscendingDiagonals[ ascDiagonal ] && unusedDescendingDiagonals[ descDiagonal ] ) {
+				// if both diagonals are not already blocked by anothers queens
+				if (unusedAscendingDiagonals[ascDiagonal] && unusedDescendingDiagonals[descDiagonal]) {
 
-					//Add contraints for this a queen
-					unusedColumns[ x ] = false;
-					unusedAscendingDiagonals[ ascDiagonal ] = false;
-					unusedDescendingDiagonals[ descDiagonal ] = false;
+					// Add contraints for this a queen
+					unusedColumns[x] = false;
+					unusedAscendingDiagonals[ascDiagonal] = false;
+					unusedDescendingDiagonals[descDiagonal] = false;
 
-					//All queens are sets on the chessboard then a solution is found!
-					if( y >= chessboardSizeMinusOne ) {
+					// All queens are sets on the chessboard then a solution is found!
+					if (y >= chessboardSizeMinusOne) {
 						solutionCount++;
 					}
 					else {
-						//Go on to the next line
-						solve( y + 1 );
+						// Go on to the next line
+						solve(y + 1);
 					}
 
-					//Unadd contraints for this a queen (back-tracking)
-					unusedDescendingDiagonals[ descDiagonal ] = true;
-					unusedAscendingDiagonals[ ascDiagonal ] = true;
-					unusedColumns[ x ] = true;
+					// Unadd contraints for this a queen (back-tracking)
+					unusedDescendingDiagonals[descDiagonal] = true;
+					unusedAscendingDiagonals[ascDiagonal] = true;
+					unusedColumns[x] = true;
 				}
 			}
 		}
