@@ -34,11 +34,15 @@ public class NQueensProblemCountIterative {
 	private final int chessboardSize;
 	private final int chessboardSizeMinusOne;
 
-	private final int[] stackx;
-	private final int[] stackdiag1;
-	private final int[] stackdiag2;
+	/**Stack for queens positions*/
+	private final int[] xStack;
+	/**Stack for ascending diagonal number*/
+	private final int[] ascDiagonalStack;
+	/**Stack for descending diagonal number*/
+	private final int[] descDiagonalStack;
 
-	private int stacklevel = 1;
+	/**Current stack level*/
+	private int stacklevel;
 
 	public NQueensProblemCountIterative(final int chessboardSizeArg) throws IOException {
 
@@ -52,9 +56,9 @@ public class NQueensProblemCountIterative {
 		unusedDescendingDiagonals = new boolean[chessboardSizeArg * 2 - 1];
 		Arrays.fill(unusedDescendingDiagonals, true);
 
-		stackx = new int[chessboardSizeArg];
-		stackdiag1 = new int[chessboardSizeArg];
-		stackdiag2 = new int[chessboardSizeArg];
+		xStack = new int[chessboardSizeArg];
+		ascDiagonalStack = new int[chessboardSizeArg];
+		descDiagonalStack = new int[chessboardSizeArg];
 
 		// Start the algorithm at the fisrt line
 		firstSolve();
@@ -79,7 +83,7 @@ public class NQueensProblemCountIterative {
 			unusedDescendingDiagonals[diag2] = false;
 
 			// Go on to the second line
-			stackx[0] = x;
+			xStack[0] = x;
 			stacklevel = 1;
 			solve();
 
@@ -105,7 +109,7 @@ public class NQueensProblemCountIterative {
 
 			// Go on to the second line
 			stacklevel = 1;
-			stackx[0] = x;
+			xStack[0] = x;
 			solve();
 
 			unusedDescendingDiagonals[diag2] = true;
@@ -137,9 +141,10 @@ public class NQueensProblemCountIterative {
 					unusedAscendingDiagonals[ascDiagonal] = false;
 					unusedDescendingDiagonals[descDiagonal] = false;
 
-					stackx[stacklevel] = x;
-					stackdiag1[stacklevel] = ascDiagonal;
-					stackdiag2[stacklevel] = descDiagonal;
+					// Stack a move
+					xStack[stacklevel] = x;
+					ascDiagonalStack[stacklevel] = ascDiagonal;
+					descDiagonalStack[stacklevel] = descDiagonal;
 					stacklevel++;
 
 					// All queens are sets on the chessboard then a solution is found!
@@ -162,9 +167,9 @@ public class NQueensProblemCountIterative {
 				// Unstack if all line positation are tested
 				stacklevel--;
 				if (stacklevel > 0) {
-					unusedDescendingDiagonals[stackdiag2[stacklevel]] = true;
-					unusedAscendingDiagonals[stackdiag1[stacklevel]] = true;
-					x = stackx[stacklevel];
+					unusedDescendingDiagonals[descDiagonalStack[stacklevel]] = true;
+					unusedAscendingDiagonals[ascDiagonalStack[stacklevel]] = true;
+					x = xStack[stacklevel];
 					unusedColumns[x] = true;
 				}
 				// Nothing to unstack, then exit
