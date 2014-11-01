@@ -33,7 +33,7 @@ With the previous placed Queen an array can be defined to mark already blocked c
 
 With the previous placed Queen 2 arrays can be defined to mark already blocked diagonals:
 
-| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 |
+| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
 | ------------- | ----------- | ------------- | ----------- | ------------- | ----------- | ------------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
 | :white_circle: | :white_circle: | :white_circle: | :red_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: |
 
@@ -42,9 +42,9 @@ With x and y going from 0 to 7, this code can be used:
 ascendingDiagnonal = x + y;
 ```
 
-| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 |
+| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
 | ------------- | ----------- | ------------- | ----------- | ------------- | ----------- | ------------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
-| :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :red_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: |
+| :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: | :red_circle: | :white_circle: | :white_circle: | :white_circle: | :white_circle: |
 
 With x and y going from 0 to 7, this code can be used:
 ```java
@@ -54,7 +54,8 @@ descendingDiagnonal = x + 8 - 1 - y;
 ## with reccursive back-tracking algorithm
 | Complexity::white_check_mark: | Efficiency::warning::warning: |
 | ---------- | ---------- |
-**The best complexity/efficiency method**
+**The best trade between complexity and efficiency algorithm**
+Useds positions and contraints are stored in the stack and in global arrays.
 
 Core algorithm:
 ```java
@@ -67,7 +68,7 @@ Core algorithm:
 			if (unusedColumns[x]) {
 
 				final int ascDiagonal = x + y;
-				final int descDiagonal = x + chessboardSizeM - 1 - y;
+				final int descDiagonal = x + chessboardSize - 1 - y;
 
 				// if both diagonals are not already blocked by anothers queens
 				if (unusedAscendingDiagonals[ascDiagonal] && unusedDescendingDiagonals[descDiagonal]) {
@@ -100,5 +101,9 @@ This place a queen only if it can be done.
 ### possible optimisations
 | Complexity | Efficiency improvements | description
 | ---------- | ---------- | ---------- |
-| Very easy | minor | the size of the chessboard minus one can be precalculated |
-| Average | minor | only half of the possibilities can be scanned by mirroring found solutions |
+| Very easy | poor | the size of the chessboard minus one can be precalculated |
+| Easy | average | only count found solutions if there is no need to print them, it improves speed if solutions are printed on the terminal |
+| Average | very important | only half of the possibilities can be scanned by mirroring found solutions |
+
+Optmized and complete algorithm can be found in this file: [NQueensProblemCountRecursive.java](NQueensProblemCountRecursive.java)
+
