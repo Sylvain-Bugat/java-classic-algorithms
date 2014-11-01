@@ -110,15 +110,16 @@ public class NQueensProblemCountRecursive {
 			//if the row is not already blocked by another queen
 			if( unusedColumns[x] ) {
 
-				final int diag1 = x + y;
-				final int diag2 = x + chessboardSizeMinusOne - y ;
+				final int ascDiagonal = x + y;
+				final int descDiagonal = x + chessboardSizeMinusOne - y ;
 
 				//if both diagonals are not already blocked by anothers queens
-				if( unusedAscendingDiagonals[ diag1 ] && unusedDescendingDiagonals[ diag2 ] ) {
+				if( unusedAscendingDiagonals[ ascDiagonal ] && unusedDescendingDiagonals[ descDiagonal ] ) {
 
+					//Add contraints for this a queen
 					unusedColumns[ x ] = false;
-					unusedAscendingDiagonals[ diag1 ] = false;
-					unusedDescendingDiagonals[ diag2 ] = false;
+					unusedAscendingDiagonals[ ascDiagonal ] = false;
+					unusedDescendingDiagonals[ descDiagonal ] = false;
 
 					//All queens are sets on the chessboard then a solution is found!
 					if( y >= chessboardSizeMinusOne ) {
@@ -129,8 +130,9 @@ public class NQueensProblemCountRecursive {
 						solve( y + 1 );
 					}
 
-					unusedDescendingDiagonals[ diag2 ] = true;
-					unusedAscendingDiagonals[ diag1 ] = true;
+					//Unadd contraints for this a queen (back-tracking)
+					unusedDescendingDiagonals[ descDiagonal ] = true;
+					unusedAscendingDiagonals[ ascDiagonal ] = true;
 					unusedColumns[ x ] = true;
 				}
 			}
