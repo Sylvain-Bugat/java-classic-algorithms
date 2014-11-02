@@ -184,3 +184,54 @@ This algorithm is more complex but may be more efficent than the recursive algor
 | Average | average | stack calculated ascending and descending diagonals numbers |
 
 Optmized and complete algorithm can be found in this file: [NQueensProblemCountIterative.java](NQueensProblemCountIterative.java)
+
+## with recursive bit-flags back-tracking algorithm
+
+| Complexity::warning::warning: | Efficiency::warning: |
+| ---------- | ---------- |
+Useds positions and contraints are stored in the stack and in global bit-flags arrays.
+
+Core algorithm:
+```java
+	private void solve( final int y ) {
+
+		//Test all position of the line
+		for( int x=0 ; x < chessboardSize ; x ++ ){
+
+			//if the row is not already blocked by another queen
+			if( ( unusedColumns & ( 1L << x ) ) == 0 ) {
+
+				//if both diagonals are not already blocked by anothers queens
+				if( ( unusedAscendingDiagonals & ( 1L << 32 - chessboardSize / 2 + x ) ) == 0 && ( unusedDescendingDiagonals & ( 1L << 32 - chessboardSize / 2 + x ) ) == 0 ) {
+
+					unusedColumns = unusedColumns | ( 1 << x );
+					unusedAscendingDiagonals = ( unusedAscendingDiagonals | ( 1L << 32 - chessboardSize / 2 + x ) ) << 1;
+					unusedDescendingDiagonals = ( unusedDescendingDiagonals | ( 1L << 32 - chessboardSize / 2 + x ) ) >> 1;
+
+					//All queens are sets on the chessboard then a solution is found!
+					if( y + 1 >= chessboardSize ) {
+						solutionCount++;
+					}
+					else {
+						//Go on to the next line
+						solve( y + 1 );
+					}
+
+					unusedColumns = unusedColumns ^ ( 1 << x );
+					unusedAscendingDiagonals = unusedAscendingDiagonals >> 1 ^ ( 1L << 32 - chessboardSize / 2 + x );
+					unusedDescendingDiagonals = unusedDescendingDiagonals << 1 ^ ( 1L << 32 - chessboardSize / 2 + x );
+				}
+			}
+		}
+	}
+```
+This algorithm is more complex becaure it needs bit shifting to access the correct bit flag for each contraint.
+
+### possible optimisations
+| Complexity | Efficiency improvements | description
+| ---------- | ---------- | ---------- |
+| Very easy | average | the diagonal shifting to used middle bits ca can be precalculated ( 32 - chessboardSize / 2 ) |
+| Easy | average | only count found solutions if there is no need to print them, it improves speed if solutions are printed on the terminal |
+| Average | very important | only half of the possibilities can be scanned by mirroring found solutions |
+
+Optmized and complete algorithm can be found in this file: [NQueensProblemCountBitFlagsIterative.java](NQueensProblemCountBitFlagsIterative.java)
