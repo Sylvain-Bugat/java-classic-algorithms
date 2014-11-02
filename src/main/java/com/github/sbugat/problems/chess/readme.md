@@ -55,7 +55,7 @@ descendingDiagnonal = x + 8 - 1 - y;
 | Complexity::white_check_mark: | Efficiency::warning::warning: |
 | ---------- | ---------- |
 **The best trade between complexity and efficiency algorithm**  
-Useds positions and contraints are stored in the stack and in global arrays.
+Used positions and contraints are stored in the stack and in global arrays.
 
 Core algorithm:
 ```java
@@ -189,7 +189,7 @@ Optmized and complete algorithm can be found in this file: [NQueensProblemCountI
 
 | Complexity::warning::warning: | Efficiency::warning: |
 | ---------- | ---------- |
-Useds positions and contraints are stored in the stack and in global bit-flags arrays.
+Used positions and contraints are stored in the stack and in global bit-flags arrays.
 
 Core algorithm:
 ```java
@@ -230,6 +230,71 @@ This algorithm is more complex becaure it needs bit shifting to access the corre
 ### possible optimisations
 | Complexity | Efficiency improvements | description
 | ---------- | ---------- | ---------- |
+| Very easy | average | the diagonal shifting to used middle bits ca can be precalculated ( 32 - chessboardSize / 2 ) |
+| Easy | average | only count found solutions if there is no need to print them, it improves speed if solutions are printed on the terminal |
+| Average | very important | only half of the possibilities can be scanned by mirroring found solutions |
+
+Optmized and complete algorithm can be found in this file: [NQueensProblemCountBitFlagsRecursive.java](NQueensProblemCountBitFlagsRecursive.java)
+
+## with iterative bit-flags back-tracking algorithm
+
+| Complexity::warning::warning: | Efficiency::warning: |
+| ---------- | ---------- |
+Used positions and contraints are stored in the stack array and in global bit-flags arrays.
+
+Core algorithm:
+```java
+	private void solve() {
+
+		int x = -1;
+		while (stacklevel > 0) {
+			// Test all position of the line
+			x++;
+
+			// if the row is not already blocked by another queen and if both diagonals are not already blocked by anothers queens
+			if ((unusedColumns & (1 << x)) + (unusedAscendingDiagonals & (1L << 32 - chessboardSize / 2 + x)) + (unusedDescendingDiagonals & (1L << 32 - chessboardSize / 2 + x)) == 0) {
+
+				stackx[stacklevel] = x;
+
+				unusedColumns = unusedColumns | (1 << x);
+				unusedAscendingDiagonals = (unusedAscendingDiagonals | (1L << 32 - chessboardSize / 2 + x)) << 1;
+				unusedDescendingDiagonals = (unusedDescendingDiagonals | (1L << 32 - chessboardSize / 2 + x)) >> 1;
+
+				stacklevel++;
+
+				// All queens are sets on the chessboard then a solution is found!
+				if (stacklevel >= chessboardSize) {
+					solutionCount++;
+
+					x = chessboardSize - 1;
+				}
+				else {
+					x = -1;
+				}
+			}
+
+			while (x >= chessboardSize - 1) {
+
+				stacklevel--;
+				if (stacklevel > 0) {
+					x = stackx[stacklevel];
+					unusedColumns = unusedColumns ^ (1 << x);
+					unusedAscendingDiagonals = unusedAscendingDiagonals >> 1 ^ (1L << 32 - chessboardSize / 2 + x);
+					unusedDescendingDiagonals = unusedDescendingDiagonals << 1 ^ (1L << 32 - chessboardSize / 2 + x);
+				}
+				else {
+					return;
+				}
+			}
+		}
+	}
+```
+This algorithm is more complex becaure it needs bit shifting and a stack to access the correct bit flag for each contraint.
+
+### possible optimisations
+| Complexity | Efficiency improvements | description
+| ---------- | ---------- | ---------- |
+| Very easy | poor | the size of the chessboard minus one can be precalculated |
 | Very easy | average | the diagonal shifting to used middle bits ca can be precalculated ( 32 - chessboardSize / 2 ) |
 | Easy | average | only count found solutions if there is no need to print them, it improves speed if solutions are printed on the terminal |
 | Average | very important | only half of the possibilities can be scanned by mirroring found solutions |
