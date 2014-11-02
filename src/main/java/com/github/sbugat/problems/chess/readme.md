@@ -137,8 +137,6 @@ Core algorithm:
 
 					// Stack a move
 					xStack[stacklevel] = x;
-					ascDiagonalStack[stacklevel] = ascDiagonal;
-					descDiagonalStack[stacklevel] = descDiagonal;
 					stacklevel++;
 
 					// All queens are sets on the chessboard then a solution is found!
@@ -161,9 +159,10 @@ Core algorithm:
 				// Unstack if all line positation are tested
 				stacklevel--;
 				if (stacklevel > 0) {
-					unusedDescendingDiagonals[descDiagonalStack[stacklevel]] = true;
-					unusedAscendingDiagonals[ascDiagonalStack[stacklevel]] = true;
 					x = xStack[stacklevel];
+					
+					unusedDescendingDiagonals[x + chessboardSize - 1 - stacklevel] = true;
+					unusedAscendingDiagonals[x + stacklevel] = true;
 					unusedColumns[x] = true;
 				}
 				// Nothing to unstack, then exit
@@ -175,3 +174,13 @@ Core algorithm:
 	}
 ```
 This algorithm is more complex but may be more efficent than the recursive algorithm.
+
+### possible optimisations
+| Complexity | Efficiency improvements | description
+| ---------- | ---------- | ---------- |
+| Very easy | poor | the size of the chessboard minus one can be precalculated |
+| Easy | average | only count found solutions if there is no need to print them, it improves speed if solutions are printed on the terminal |
+| Average | very important | only half of the possibilities can be scanned by mirroring found solutions |
+| Average | average | stack calculated ascending and descending diagonals numbers |
+
+Optmized and complete algorithm can be found in this file: [NQueensProblemCountIterative.java](NQueensProblemCountIterative.java)
