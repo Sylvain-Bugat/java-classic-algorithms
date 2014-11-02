@@ -300,3 +300,64 @@ This algorithm is more complex becaure it needs bit shifting and a stack to acce
 | Average | very important | only half of the possibilities can be scanned by mirroring found solutions |
 
 Optmized and complete algorithm can be found in this file: [NQueensProblemCountBitFlagsIterative.java](NQueensProblemCountBitFlagsIterative.java)
+
+## with iterative stacked bit-flags back-tracking algorithm
+
+| Complexity::warning::warning::warning: | Efficiency::white_check_mark: |
+| ---------- | ---------- |
+Used bit-flags and contraints are stored in stack arrays (no need to undo a move)
+```java
+	private void solve( int bitFlags ) {
+
+		while( stacklevel > -1 ) {
+
+			//Test first possible queen of the line
+			int targetQueen = Integer.highestOneBit( ~( bitFlags ) & bitFlagsMask );
+			//if the row is not already blocked by another queen and if both diagonals are not already blocked by anothers queens
+			if( targetQueen != 0 ) {
+
+				bitFlags |= targetQueen;
+
+				//All queens are sets on the chessboard then a solution is found!
+				if( stacklevel + 1 >= chessboardSize - 1 ) {
+					solutionCount++;
+				}
+				else {
+
+					final int prevStacklevel = stacklevel++;
+					bitFlagsStack[ stacklevel ] = bitFlags;
+
+					unusedColumnsStack[ stacklevel ] = unusedColumnsStack[ prevStacklevel ] | targetQueen;
+					unusedAscendingDiagonalsStack[ stacklevel ] = ( unusedAscendingDiagonalsStack[ prevStacklevel ] | targetQueen ) << 1;
+					unusedDescendingDiagonalsStack[ stacklevel ] = ( unusedDescendingDiagonalsStack[ prevStacklevel ] | targetQueen ) >> 1;
+					bitFlags = bitFlagsMask & ( unusedColumnsStack[ stacklevel ] | unusedAscendingDiagonalsStack[ stacklevel ] | unusedDescendingDiagonalsStack[ stacklevel ] );
+				}
+			}
+
+			while( bitFlags == bitFlagsMask ) {
+
+				if( stacklevel > 0 ) {
+					bitFlags = bitFlagsStack[ stacklevel ];
+					stacklevel --;
+				}
+				else {
+					return;
+				}
+			}
+		}
+	}
+```
+This algorithm is much more complex because it needs bit-flags stack to store possible placed queens and a stack for colums and diagonals contraints.
+
+### possible optimisations
+| Complexity | Efficiency improvements | description
+| ---------- | ---------- | ---------- |
+| Very easy | poor | inline code of Integer.highestOneBit the size of the chessboard minus one can be precalculated |
+| Very easy | poor | the size of the chessboard minus two can be precalculated |
+| Average | poor | the bit-flags can be inverted to reduce needed operation |
+| Very easy | average | Operations and affectations to update the bit-flags can be done in one-line of code |
+| Easy | average | the first test can be deleted bacause it is always true |
+| Easy | average | only count found solutions if there is no need to print them, it improves speed if solutions are printed on the terminal |
+| Average | very important | only half of the possibilities can be scanned by mirroring found solutions |
+
+Optmized and complete algorithm can be found in this file: [NQueensProblemCountStackedBitFlags.java](NQueensProblemCountStackedBitFlags.java)
