@@ -158,5 +158,10 @@ public class SudokuRecursiveSolver {
 			System.out.println("No solution found");
 			System.exit(1);
 		}
+		else if ( solver.solutionCount > 1 ) {
+
+			System.out.println("Multiple solutions found, this is not a true Soduku grid!");
+			System.exit(1);
+		}
 	}
 }
