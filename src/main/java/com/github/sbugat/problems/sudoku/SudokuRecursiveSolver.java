@@ -89,11 +89,14 @@ public class SudokuRecursiveSolver {
 							solutionCount++;
 							System.out.println("solution number " + solutionCount + ":");
 							print();
-							return;
+						}
+						else {
+							solve(newX, newY);
 						}
 					}
-
-					solve(newX, newY);
+					else {
+						solve(newX, newY);
+					}
 
 					columns[x][nb] = true;
 					lines[y][nb] = true;
