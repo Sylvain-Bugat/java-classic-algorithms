@@ -3,15 +3,16 @@ package com.github.sbugat.problems.sudoku;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class SudokuRecursiveSolver {
 
 	private final int[][] grid;
-	private final int[][] lines;
-	private final int[][] columns;
-	private final int[][] blocks;
+	private final boolean[][] lines;
+	private final boolean[][] columns;
+	private final boolean[][] blocks;
 
-	boolean solved;
+	private int solutionCount;
 
 	private final int dimension;
 
@@ -25,9 +26,14 @@ public class SudokuRecursiveSolver {
 		final int arraySize = dimensionArg * dimensionArg + 1;
 
 		grid = new int[arraySize][arraySize];
-		lines = new int[arraySize][arraySize];
-		columns = new int[arraySize][10];
-		blocks = new int[arraySize][arraySize];
+		lines = new boolean[arraySize][arraySize];
+		columns = new boolean[arraySize][arraySize];
+		blocks = new boolean[arraySize][arraySize];
+		for (int i = 0; i < arraySize; i++) {
+			Arrays.fill(lines[i], true);
+			Arrays.fill(columns[i], true);
+			Arrays.fill(blocks[i], true);
+		}
 
 		read();
 
@@ -50,10 +56,9 @@ public class SudokuRecursiveSolver {
 				y++;
 
 				if (y >= sudokuSize) {
-					System.out.println("solved");
-					solved = true;
+					solutionCount++;
+					System.out.println("solution number " + solutionCount + ":");
 					print();
-					// System.exit( 0 );
 					return;
 				}
 			}
@@ -64,14 +69,14 @@ public class SudokuRecursiveSolver {
 
 		for (int nb = 1; nb <= sudokuSize; nb++) {
 
-			if (0 == columns[x][nb] && 0 == lines[y][nb]) {
+			if (columns[x][nb] && lines[y][nb]) {
 
 				final int blocId = x / dimension + dimension * (y / dimension);
-				if (blocks[blocId][nb] == 0) {
+				if (blocks[blocId][nb]) {
 
-					columns[x][nb] = 1;
-					lines[y][nb] = 1;
-					blocks[blocId][nb] = 1;
+					columns[x][nb] = false;
+					lines[y][nb] = false;
+					blocks[blocId][nb] = false;
 					grid[y][x] = nb;
 
 					int newX = x + 1;
@@ -81,19 +86,18 @@ public class SudokuRecursiveSolver {
 						newY++;
 
 						if (newY >= sudokuSize) {
-							System.out.println("solved");
-							solved = true;
+							solutionCount++;
+							System.out.println("solution number " + solutionCount + ":");
 							print();
-							// System.exit( 0 );
 							return;
 						}
 					}
 
 					solve(newX, newY);
 
-					columns[x][nb] = 0;
-					lines[y][nb] = 0;
-					blocks[blocId][nb] = 0;
+					columns[x][nb] = true;
+					lines[y][nb] = true;
+					blocks[blocId][nb] = true;
 					grid[y][x] = 0;
 				}
 			}
@@ -113,10 +117,10 @@ public class SudokuRecursiveSolver {
 					grid[y][x] = ligne[x] - '0';
 
 					if (grid[y][x] > 0) {
-						columns[x][grid[y][x]] = 1;
-						lines[y][grid[y][x]] = 1;
+						columns[x][grid[y][x]] = false;
+						lines[y][grid[y][x]] = false;
 
-						blocks[x / 3 + 3 * (y / 3)][grid[y][x]] = 1;
+						blocks[x / 3 + 3 * (y / 3)][grid[y][x]] = false;
 					}
 				}
 			}
@@ -144,6 +148,12 @@ public class SudokuRecursiveSolver {
 
 	public static void main(String args[]) throws IOException {
 
-		new SudokuRecursiveSolver(3);
+		SudokuRecursiveSolver solver = new SudokuRecursiveSolver(3);
+
+		if (0 == solver.solutionCount) {
+
+			System.out.println("No solution found");
+			System.exit(1);
+		}
 	}
 }
