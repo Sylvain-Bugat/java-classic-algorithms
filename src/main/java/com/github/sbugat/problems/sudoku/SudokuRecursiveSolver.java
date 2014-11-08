@@ -5,23 +5,58 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 
+/**
+ * Sudoku solver class
+ *
+ * @author Sylvain Bugat
+ */
 public class SudokuRecursiveSolver {
 
+	/**
+	 * Sudoku grid
+	 */
 	private final int[][] grid;
+
+	/**
+	 * Contraint to check used symbols per lines
+	 */
 	private final boolean[][] lines;
+
+	/**
+	 * Contraint to check used symbols per columns
+	 */
 	private final boolean[][] columns;
+
+	/**
+	 * Contraint to check used symbols per blocks
+	 */
 	private final boolean[][] blocks;
 
+	/**
+	 * Number of solutions found
+	 */
 	private int solutionCount;
 
+	/**
+	 * Size of a sub-square of the sudoku grid (on a classic sudoku grid it's 3)
+	 */
 	private final int dimension;
 
+	/**
+	 * Total size of the sudoku grid (on a classic sudoku grid it's 9)
+	 */
 	private final int sudokuSize;
+
+	/**
+	 * Number of possible different symbol (on a classic sudoku grid it's 9: 1 2 3 4 5 6 7 8 9)
+	 */
+	private final int symbolsNumber;
 
 	public SudokuRecursiveSolver(final int dimensionArg) throws IOException {
 
 		dimension = dimensionArg;
 		sudokuSize = dimensionArg * 3;
+		symbolsNumber = dimensionArg * dimensionArg;
 
 		final int arraySize = dimensionArg * dimensionArg + 1;
 
@@ -67,7 +102,7 @@ public class SudokuRecursiveSolver {
 			return;
 		}
 
-		for (int nb = 1; nb <= sudokuSize; nb++) {
+		for (int nb = 1; nb <= symbolsNumber; nb++) {
 
 			if (columns[x][nb] && lines[y][nb]) {
 
@@ -130,6 +165,9 @@ public class SudokuRecursiveSolver {
 		}
 	}
 
+	/**
+	 * Print the current grid to display a solution
+	 */
 	public void print() {
 
 		for (int y = 0; y < sudokuSize; y++) {
@@ -158,7 +196,7 @@ public class SudokuRecursiveSolver {
 			System.out.println("No solution found");
 			System.exit(1);
 		}
-		else if ( solver.solutionCount > 1 ) {
+		else if (solver.solutionCount > 1) {
 
 			System.out.println("Multiple solutions found, this is not a true Soduku grid!");
 			System.exit(1);
