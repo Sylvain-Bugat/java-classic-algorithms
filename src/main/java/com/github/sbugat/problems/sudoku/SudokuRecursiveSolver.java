@@ -146,11 +146,11 @@ public class SudokuRecursiveSolver {
 
 		try (BufferedReader br = new BufferedReader(new FileReader("grid.txt"))) {
 
-			for (int y = 0; y < 9; y++) {
+			for (int y = 0; y < sudokuSize; y++) {
 
-				char[] ligne = br.readLine().toCharArray();
+				final char[] ligne = br.readLine().toCharArray();
 
-				for (int x = 0; x < 9; x++) {
+				for (int x = 0; x < sudokuSize; x++) {
 
 					grid[y][x] = ligne[x] - '0';
 
@@ -158,7 +158,7 @@ public class SudokuRecursiveSolver {
 						columns[x][grid[y][x]] = false;
 						lines[y][grid[y][x]] = false;
 
-						blocks[x / 3 + 3 * (y / 3)][grid[y][x]] = false;
+						blocks[x / dimension + dimension * (y / dimension)][grid[y][x]] = false;
 					}
 				}
 			}
