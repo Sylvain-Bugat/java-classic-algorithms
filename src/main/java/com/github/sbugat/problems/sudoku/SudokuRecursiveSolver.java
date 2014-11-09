@@ -43,14 +43,9 @@ public class SudokuRecursiveSolver {
 	private final int dimension;
 
 	/**
-	 * Total size of the sudoku grid (on a classic sudoku grid it's 9)
+	 * Total size of the sudoku grid (on a classic sudoku grid it's 9) and number of possible different symbol (on a classic sudoku grid it's 9: 1 2 3 4 5 6 7 8 9)
 	 */
 	private final int sudokuSize;
-
-	/**
-	 * Number of possible different symbol (on a classic sudoku grid it's 9: 1 2 3 4 5 6 7 8 9)
-	 */
-	private final int symbolsNumber;
 
 	/**
 	 * Delta for read and print grid symbols
@@ -60,8 +55,7 @@ public class SudokuRecursiveSolver {
 	public SudokuRecursiveSolver(final int dimensionArg, final int symbolDeltaArg) throws IOException {
 
 		dimension = dimensionArg;
-		sudokuSize = dimensionArg * 3;
-		symbolsNumber = dimensionArg * dimensionArg;
+		sudokuSize = dimensionArg * dimensionArg;
 		symbolDelta = symbolDeltaArg;
 
 		final int arraySize = dimensionArg * dimensionArg;
@@ -77,6 +71,7 @@ public class SudokuRecursiveSolver {
 		}
 
 		read();
+		print();
 
 		solve(0, 0);
 	}
@@ -108,7 +103,7 @@ public class SudokuRecursiveSolver {
 			return;
 		}
 
-		for (int nb = 0; nb < symbolsNumber; nb++) {
+		for (int nb = 0; nb < sudokuSize; nb++) {
 
 			if (columns[x][nb] && lines[y][nb]) {
 
@@ -150,7 +145,7 @@ public class SudokuRecursiveSolver {
 
 	public void read() throws IOException {
 
-		try (BufferedReader br = new BufferedReader(new FileReader("grid.txt"))) {
+		try (BufferedReader br = new BufferedReader(new FileReader("hexagrid.txt"))) {
 
 			int y = 0;
 
@@ -198,7 +193,7 @@ public class SudokuRecursiveSolver {
 	 */
 	public void print() {
 
-		final int numberDigits = String.valueOf(symbolsNumber + symbolDelta).length();
+		final int numberDigits = String.valueOf(sudokuSize + symbolDelta).length();
 
 		for (int y = 0; y < sudokuSize; y++) {
 
@@ -226,7 +221,8 @@ public class SudokuRecursiveSolver {
 
 	public static void main(String args[]) throws IOException {
 
-		final SudokuRecursiveSolver solver = new SudokuRecursiveSolver(3, 1);
+		//final SudokuRecursiveSolver solver = new SudokuRecursiveSolver(3, 1);
+		final SudokuRecursiveSolver solver = new SudokuRecursiveSolver(4, 0);
 
 		if (0 == solver.solutionCount) {
 
