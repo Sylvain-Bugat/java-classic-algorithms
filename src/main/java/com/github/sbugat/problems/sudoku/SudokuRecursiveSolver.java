@@ -146,20 +146,37 @@ public class SudokuRecursiveSolver {
 
 		try (BufferedReader br = new BufferedReader(new FileReader("grid.txt"))) {
 
-			for (int y = 0; y < sudokuSize; y++) {
+			int y=0;
 
-				final char[] ligne = br.readLine().toCharArray();
+			while( y<sudokuSize ){
 
-				for (int x = 0; x < sudokuSize; x++) {
+				final String line = br.readLine();
+				if( null == line ) {
+					System.err.println("Not enough line");
+					System.exit(1);
+				}
 
-					grid[y][x] = ligne[x] - '0';
+				if( ! line.isEmpty() ) {
 
-					if (grid[y][x] > 0) {
-						columns[x][grid[y][x]] = false;
-						lines[y][grid[y][x]] = false;
-
-						blocks[x / dimension + dimension * (y / dimension)][grid[y][x]] = false;
+					final String[] symbols = line.split( " +" );
+					if( symbols.length < sudokuSize ) {
+						System.err.println("incorrect line (not enough numbers):" + line );
+						System.exit(1);
 					}
+
+					for (int x = 0; x < sudokuSize; x++) {
+
+						grid[y][x] = Integer.parseInt(symbols[x]);
+
+						if (grid[y][x] > 0) {
+							columns[x][grid[y][x]] = false;
+							lines[y][grid[y][x]] = false;
+
+							blocks[x / dimension + dimension * (y / dimension)][grid[y][x]] = false;
+						}
+					}
+
+					y++;
 				}
 			}
 		}
