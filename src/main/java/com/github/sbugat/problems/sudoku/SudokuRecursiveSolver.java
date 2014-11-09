@@ -52,10 +52,12 @@ public class SudokuRecursiveSolver {
 	 */
 	private final int symbolsNumber;
 
-
+	/**
+	 * Delta for read and print grid symbols
+	 */
 	private final int symbolDelta;
 
-	public SudokuRecursiveSolver(final int dimensionArg, final int symbolDeltaArg ) throws IOException {
+	public SudokuRecursiveSolver(final int dimensionArg, final int symbolDeltaArg) throws IOException {
 
 		dimension = dimensionArg;
 		sudokuSize = dimensionArg * 3;
@@ -76,7 +78,6 @@ public class SudokuRecursiveSolver {
 
 		read();
 
-		print();
 		solve(0, 0);
 	}
 
@@ -151,21 +152,21 @@ public class SudokuRecursiveSolver {
 
 		try (BufferedReader br = new BufferedReader(new FileReader("grid.txt"))) {
 
-			int y=0;
+			int y = 0;
 
-			while( y<sudokuSize ){
+			while (y < sudokuSize) {
 
 				final String line = br.readLine();
-				if( null == line ) {
+				if (null == line) {
 					System.err.println("Not enough line");
 					System.exit(1);
 				}
 
-				if( ! line.isEmpty() ) {
+				if (!line.isEmpty()) {
 
-					final String[] symbols = line.split( " +" );
-					if( symbols.length < sudokuSize ) {
-						System.err.println("incorrect line (not enough numbers):" + line );
+					final String[] symbols = line.split(" +");
+					if (symbols.length < sudokuSize) {
+						System.err.println("incorrect line (not enough numbers):" + line);
 						System.exit(1);
 					}
 
@@ -174,7 +175,7 @@ public class SudokuRecursiveSolver {
 						try {
 							grid[y][x] = Integer.parseInt(symbols[x]) - symbolDelta;
 						}
-						catch( final NumberFormatException e ){
+						catch (final NumberFormatException e) {
 							grid[y][x] = -1;
 						}
 
@@ -197,18 +198,27 @@ public class SudokuRecursiveSolver {
 	 */
 	public void print() {
 
+		final int numberDigits = String.valueOf(symbolsNumber + symbolDelta).length();
+
 		for (int y = 0; y < sudokuSize; y++) {
 
-			if (y % dimension == 0) {
+			if (y % dimension == 0 && y > 0) {
+				System.out.println();
 				System.out.println();
 			}
 
 			for (int x = 0; x < sudokuSize; x++) {
 
-				if (x % dimension == 0) {
-					System.out.print(" ");
+				if (x % dimension == 0 && x > 0) {
+					System.out.print(String.format("%" + numberDigits + "s ", ""));
 				}
-				System.out.print(grid[y][x] + symbolDelta);
+
+				if (-1 == grid[y][x]) {
+					System.out.print(String.format("%" + numberDigits + "s ", "*"));
+				}
+				else {
+					System.out.print(String.format("%" + numberDigits + "d ", grid[y][x] + symbolDelta));
+				}
 			}
 			System.out.println();
 		}
@@ -216,7 +226,7 @@ public class SudokuRecursiveSolver {
 
 	public static void main(String args[]) throws IOException {
 
-		final SudokuRecursiveSolver solver = new SudokuRecursiveSolver(3, 1 );
+		final SudokuRecursiveSolver solver = new SudokuRecursiveSolver(3, 1);
 
 		if (0 == solver.solutionCount) {
 
