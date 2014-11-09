@@ -52,13 +52,17 @@ public class SudokuRecursiveSolver {
 	 */
 	private final int symbolsNumber;
 
-	public SudokuRecursiveSolver(final int dimensionArg) throws IOException {
+
+	private final int symbolDelta;
+
+	public SudokuRecursiveSolver(final int dimensionArg, final int symbolDeltaArg ) throws IOException {
 
 		dimension = dimensionArg;
 		sudokuSize = dimensionArg * 3;
 		symbolsNumber = dimensionArg * dimensionArg;
+		symbolDelta = symbolDeltaArg;
 
-		final int arraySize = dimensionArg * dimensionArg + 1;
+		final int arraySize = dimensionArg * dimensionArg;
 
 		grid = new int[arraySize][arraySize];
 		lines = new boolean[arraySize][arraySize];
@@ -72,6 +76,7 @@ public class SudokuRecursiveSolver {
 
 		read();
 
+		print();
 		solve(0, 0);
 	}
 
@@ -84,7 +89,7 @@ public class SudokuRecursiveSolver {
 	public void solve(int x, int y) {
 
 		// If a symbol is already in the grid at this position
-		if (grid[y][x] > 0) {
+		if (grid[y][x] >= 0) {
 			x++;
 			if (x >= sudokuSize) {
 				x = 0;
@@ -102,7 +107,7 @@ public class SudokuRecursiveSolver {
 			return;
 		}
 
-		for (int nb = 1; nb <= symbolsNumber; nb++) {
+		for (int nb = 0; nb < symbolsNumber; nb++) {
 
 			if (columns[x][nb] && lines[y][nb]) {
 
@@ -136,7 +141,7 @@ public class SudokuRecursiveSolver {
 					columns[x][nb] = true;
 					lines[y][nb] = true;
 					blocks[blocId][nb] = true;
-					grid[y][x] = 0;
+					grid[y][x] = -1;
 				}
 			}
 		}
@@ -166,9 +171,14 @@ public class SudokuRecursiveSolver {
 
 					for (int x = 0; x < sudokuSize; x++) {
 
-						grid[y][x] = Integer.parseInt(symbols[x]);
+						try {
+							grid[y][x] = Integer.parseInt(symbols[x]) - symbolDelta;
+						}
+						catch( final NumberFormatException e ){
+							grid[y][x] = -1;
+						}
 
-						if (grid[y][x] > 0) {
+						if (grid[y][x] >= 0) {
 							columns[x][grid[y][x]] = false;
 							lines[y][grid[y][x]] = false;
 
@@ -198,7 +208,7 @@ public class SudokuRecursiveSolver {
 				if (x % dimension == 0) {
 					System.out.print(" ");
 				}
-				System.out.print(grid[y][x]);
+				System.out.print(grid[y][x] + symbolDelta);
 			}
 			System.out.println();
 		}
@@ -206,7 +216,7 @@ public class SudokuRecursiveSolver {
 
 	public static void main(String args[]) throws IOException {
 
-		SudokuRecursiveSolver solver = new SudokuRecursiveSolver(3);
+		final SudokuRecursiveSolver solver = new SudokuRecursiveSolver(3, 1 );
 
 		if (0 == solver.solutionCount) {
 
