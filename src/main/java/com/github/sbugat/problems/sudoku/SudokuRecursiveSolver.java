@@ -145,7 +145,7 @@ public class SudokuRecursiveSolver {
 
 	public void read() throws IOException {
 
-		try (BufferedReader br = new BufferedReader(new FileReader("hexagrid.txt"))) {
+		try (BufferedReader br = new BufferedReader(new FileReader("grid.txt"))) {
 
 			int y = 0;
 
@@ -221,8 +221,7 @@ public class SudokuRecursiveSolver {
 
 	public static void main(String args[]) throws IOException {
 
-		//final SudokuRecursiveSolver solver = new SudokuRecursiveSolver(3, 1);
-		final SudokuRecursiveSolver solver = new SudokuRecursiveSolver(4, 0);
+		final SudokuRecursiveSolver solver = new SudokuRecursiveSolver(3, 1);
 
 		if (0 == solver.solutionCount) {
 
