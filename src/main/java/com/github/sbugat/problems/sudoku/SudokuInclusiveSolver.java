@@ -23,11 +23,6 @@ public class SudokuInclusiveSolver {
 	private final boolean[][][] possibleSymbols;
 
 	/**
-	 * Contraint to check used symbols per blocks
-	 */
-	private final boolean[][] blocks;
-
-	/**
 	 * Number of solutions found
 	 */
 	private int solutionCount;
@@ -56,13 +51,11 @@ public class SudokuInclusiveSolver {
 		symbolDelta = symbolDeltaArg;
 
 		grid = new int[sudokuSize][sudokuSize];
-		blocks = new boolean[sudokuSize][sudokuSize];
 		possibleSymbols = new boolean[sudokuSize][sudokuSize][sudokuSize];
 		for (int i = 0; i < sudokuSize; i++) {
 			for (int j = 0; j < sudokuSize; j++) {
 				Arrays.fill(possibleSymbols[i][j], true);
 			}
-			Arrays.fill(blocks[i], true);
 		}
 
 		read();
