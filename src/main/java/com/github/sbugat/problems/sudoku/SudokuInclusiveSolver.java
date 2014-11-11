@@ -94,6 +94,7 @@ public class SudokuInclusiveSolver {
 
 						if (1 == possibleSymbolCount) {
 							loopSymbolPlaced++;
+							System.out.println("Inclusive placement: " + (targetSymbol + symbolDelta) + " at (" + (x + 1) + "," + (y + 1) + ")" );
 							placeSymbol(x, y, targetSymbol);
 						}
 					}
