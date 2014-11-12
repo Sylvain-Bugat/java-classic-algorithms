@@ -1,5 +1,7 @@
 package com.github.sbugat.problems.sudoku;
 
+import gnu.getopt.Getopt;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -221,7 +223,56 @@ public class SudokuRecursiveSolver {
 
 	public static void main(String args[]) throws IOException {
 
-		final SudokuRecursiveSolver solver = new SudokuRecursiveSolver(3, 1);
+		final String usage = "Usage: " + SudokuRecursiveSolver.class.getSimpleName() + " [-n <dimension of the sudoku>] [-f <input sudoku file>] [-s <symbol shifting>]";
+
+		final Getopt getOpt = new Getopt( SudokuRecursiveSolver.class.getSimpleName(), args, ":n:f:s:" );
+		getOpt.setOpterr( false );
+
+		//Default sudoku size
+		int sudokuSize = 3;
+
+		//Default symbol shifting
+		int symbolShifting = 1;
+
+		int c = getOpt.getopt();
+		while( -1 != c )
+		{
+			switch(c)
+			{
+			case 'n':
+				try {
+					sudokuSize = Integer.parseInt( getOpt.getOptarg() );
+
+					if( sudokuSize < 3 ) {
+						System.err.println( usage );
+						System.exit( 1 );
+					}
+				}
+				catch( final NumberFormatException e ) {
+					System.err.println( usage );
+					System.exit( 1 );
+				}
+				break;
+
+			case 's':
+				try {
+					symbolShifting = Integer.parseInt( getOpt.getOptarg() );
+				}
+				catch( final NumberFormatException e ) {
+					System.err.println( usage );
+					System.exit( 1 );
+				}
+				break;
+
+			case '?':
+			default:
+				System.err.println( usage );
+				System.exit( 1 );
+			}
+
+			c = getOpt.getopt();
+		}
+		final SudokuRecursiveSolver solver = new SudokuRecursiveSolver(sudokuSize, symbolShifting);
 
 		if (0 == solver.solutionCount) {
 
