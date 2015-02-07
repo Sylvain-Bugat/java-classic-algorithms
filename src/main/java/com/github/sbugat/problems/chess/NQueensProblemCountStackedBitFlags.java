@@ -1,18 +1,16 @@
 package com.github.sbugat.problems.chess;
 
-import org.apache.commons.lang3.StringUtils;
-
 import gnu.getopt.Getopt;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Classic N chess queens on a size N chess board with bits flags
- *
- * Time on Intel Q6600 CPU:
- * 8       9         10       11       12       13       14       15        16
- * 0m0.099s 0m0.108s 0m0.113s 0m0.119s 0m0.117s 0m0.152s 0m0.357s 0m1.497s 0m8.647s
- *
+ * 
+ * Time on Intel Q6600 CPU: 8 9 10 11 12 13 14 15 16 0m0.099s 0m0.108s 0m0.113s 0m0.119s 0m0.117s 0m0.152s 0m0.357s 0m1.497s 0m8.647s
+ * 
  * @author Sylvain Bugat
- *
+ * 
  */
 public class NQueensProblemCountStackedBitFlags {
 
@@ -21,14 +19,14 @@ public class NQueensProblemCountStackedBitFlags {
 
 	/** Size of the chess board */
 	private final int chessboardSize;
-	/** Precalculated constant*/
+	/** Precalculated constant */
 	private final int chessboardSizeMinusTwo;
 
 	private final boolean printSolutions;
 
-	/** Stack for used/free bit-flags*/
+	/** Stack for used/free bit-flags */
 	private final int[] bitFlagsStack;
-	/** Constant bit*flags mask depending of the chess-board size*/
+	/** Constant bit*flags mask depending of the chess-board size */
 	private int bitFlagsMask;
 	private final int[] unusedColumnsStack;
 	private final int[] unusedAscendingDiagonalsStack;
@@ -68,8 +66,8 @@ public class NQueensProblemCountStackedBitFlags {
 		for (int x = 0; x < chessboardSize / 2; x++) {
 
 			unusedColumnsStack[0] = 1 << x;
-			unusedAscendingDiagonalsStack[0] = (1 << x) << 1;
-			unusedDescendingDiagonalsStack[0] = (1 << x) >> 1;
+			unusedAscendingDiagonalsStack[0] = 1 << x << 1;
+			unusedDescendingDiagonalsStack[0] = 1 << x >> 1;
 			final int bitFlags = bitFlagsMask & ~(unusedColumnsStack[0] | unusedAscendingDiagonalsStack[0] | unusedDescendingDiagonalsStack[0]);
 			bitFlagsStack[0] = bitFlags;
 
@@ -84,8 +82,8 @@ public class NQueensProblemCountStackedBitFlags {
 			final int x = chessboardSize / 2;
 
 			unusedColumnsStack[0] = 1 << x;
-			unusedAscendingDiagonalsStack[0] = (1 << x) << 1;
-			unusedDescendingDiagonalsStack[0] = (1 << x) >> 1;
+			unusedAscendingDiagonalsStack[0] = 1 << x << 1;
+			unusedDescendingDiagonalsStack[0] = 1 << x >> 1;
 
 			// just test next line half of possible position because or mirroring
 			int bitFlags = 0; // bitFlagsMask & ~( unusedColumnsStack[ 0 ] | unusedAscendingDiagonalsStack[ 0 ] | unusedDescendingDiagonalsStack[ 0 ] );
@@ -105,7 +103,7 @@ public class NQueensProblemCountStackedBitFlags {
 
 	/**
 	 * Solving with iterative/stacking method by using bit flags, do a depth-first/back-tracking algorithm a queen must me placed on the first line
-	 *
+	 * 
 	 * @param initial bitFlag with a single queen on the first line
 	 */
 	private void solve(int bitFlags) {
@@ -118,15 +116,15 @@ public class NQueensProblemCountStackedBitFlags {
 			// Test first possible queen of the line using direct inlining(manual code copy) of this method call: Integer.lowestOneBit( bitFlags );
 			// if the row is not already blocked by another queen and if both diagonals are not already blocked by anothers queens
 			// Don't need to test if targetQueen is not 0 because bitFlags has not been unstacked at the end of the loop (=contain at least one 0)
-			targetQueen = -(bitFlags) & (bitFlags);
+			targetQueen = -bitFlags & bitFlags;
 
 			// All queens are sets on the chessboard then a solution is found!
 			// Test with the board size minus 2 because the targeted queen is not placed yet
 			if (stacklevel >= chessboardSizeMinusTwo) {
 				solutionCount++;
 
-				//Uncomment to enable solution printing, minor optimisation without testing this
-				//if( printSolutions ) { print( targetQueen ); }
+				// Uncomment to enable solution printing, minor optimisation without testing this
+				// if( printSolutions ) { print( targetQueen ); }
 
 				bitFlags ^= targetQueen;
 			}
@@ -165,7 +163,7 @@ public class NQueensProblemCountStackedBitFlags {
 
 	/**
 	 * Print a solution and mirror version
-	 *
+	 * 
 	 * @param targetQueen
 	 */
 	private void print(final int targetQueen) {
@@ -187,7 +185,7 @@ public class NQueensProblemCountStackedBitFlags {
 
 	/**
 	 * N Queens resolving program
-	 *
+	 * 
 	 * @param args
 	 */
 	public static void main(final String args[]) {
