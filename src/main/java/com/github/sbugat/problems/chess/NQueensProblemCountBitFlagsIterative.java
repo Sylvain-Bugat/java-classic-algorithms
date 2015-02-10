@@ -4,13 +4,11 @@ import gnu.getopt.Getopt;
 
 /**
  * Classic N chess queens on a size N chess board with bits flags
- *
- * Time on Intel Q6600 CPU:
- * 8       9         10       11       12       13       14       15        16
- * 0m0.134s 0m0.117s 0m0.124s 0m0.128s 0m0.142s 0m0.314s 0m1.253s 0m8.072s 0m50.754s
- *
+ * 
+ * Time on Intel Q6600 CPU: 8 9 10 11 12 13 14 15 16 0m0.134s 0m0.117s 0m0.124s 0m0.128s 0m0.142s 0m0.314s 0m1.253s 0m8.072s 0m50.754s
+ * 
  * @author Sylvain Bugat
- *
+ * 
  */
 public class NQueensProblemCountBitFlagsIterative {
 
@@ -56,18 +54,18 @@ public class NQueensProblemCountBitFlagsIterative {
 		// Test half square of the line
 		for (int x = 0; x < chessboardSize / 2; x++) {
 
-			unusedColumns = unusedColumns | (1 << x);
-			unusedAscendingDiagonals = (unusedAscendingDiagonals | (1L << diagonalShifting + x)) << 1;
-			unusedDescendingDiagonals = (unusedDescendingDiagonals | (1L << diagonalShifting + x)) >> 1;
+			unusedColumns = unusedColumns | 1 << x;
+			unusedAscendingDiagonals = (unusedAscendingDiagonals | 1L << diagonalShifting + x) << 1;
+			unusedDescendingDiagonals = (unusedDescendingDiagonals | 1L << diagonalShifting + x) >> 1;
 
 			// Go on to the second line
 			stackx[0] = x;
 			stacklevel = 1;
 			solve();
 
-			unusedColumns = unusedColumns ^ (1 << x);
-			unusedAscendingDiagonals = unusedAscendingDiagonals >> 1 ^ (1L << diagonalShifting + x);
-			unusedDescendingDiagonals = unusedDescendingDiagonals << 1 ^ (1L << diagonalShifting + x);
+			unusedColumns = unusedColumns ^ 1 << x;
+			unusedAscendingDiagonals = unusedAscendingDiagonals >> 1 ^ 1L << diagonalShifting + x;
+			unusedDescendingDiagonals = unusedDescendingDiagonals << 1 ^ 1L << diagonalShifting + x;
 		}
 
 		// Multiply by 2 the solution count for the other half not calculated
@@ -78,18 +76,18 @@ public class NQueensProblemCountBitFlagsIterative {
 
 			final int x = chessboardSize / 2;
 
-			unusedColumns = unusedColumns | (1 << x);
-			unusedAscendingDiagonals = (unusedAscendingDiagonals | (1L << diagonalShifting + x)) << 1;
-			unusedDescendingDiagonals = (unusedDescendingDiagonals | (1L << diagonalShifting + x)) >> 1;
+			unusedColumns = unusedColumns | 1 << x;
+			unusedAscendingDiagonals = (unusedAscendingDiagonals | 1L << diagonalShifting + x) << 1;
+			unusedDescendingDiagonals = (unusedDescendingDiagonals | 1L << diagonalShifting + x) >> 1;
 
 			// Go on to the second line
 			stackx[0] = x;
 			stacklevel = 1;
 			solve();
 
-			unusedColumns = unusedColumns ^ (1 << x);
-			unusedAscendingDiagonals = unusedAscendingDiagonals >> 1 ^ (1L << diagonalShifting + x);
-			unusedDescendingDiagonals = unusedDescendingDiagonals << 1 ^ (1L << diagonalShifting + x);
+			unusedColumns = unusedColumns ^ 1 << x;
+			unusedAscendingDiagonals = unusedAscendingDiagonals >> 1 ^ 1L << diagonalShifting + x;
+			unusedDescendingDiagonals = unusedDescendingDiagonals << 1 ^ 1L << diagonalShifting + x;
 		}
 	}
 
@@ -104,13 +102,13 @@ public class NQueensProblemCountBitFlagsIterative {
 			x++;
 
 			// if the row is not already blocked by another queen and if both diagonals are not already blocked by anothers queens
-			if ((unusedColumns & (1 << x)) + (unusedAscendingDiagonals & (1L << diagonalShifting + x)) + (unusedDescendingDiagonals & (1L << diagonalShifting + x)) == 0) {
+			if ((unusedColumns & 1 << x) + (unusedAscendingDiagonals & 1L << diagonalShifting + x) + (unusedDescendingDiagonals & 1L << diagonalShifting + x) == 0) {
 
 				stackx[stacklevel] = x;
 
-				unusedColumns = unusedColumns | (1 << x);
-				unusedAscendingDiagonals = (unusedAscendingDiagonals | (1L << diagonalShifting + x)) << 1;
-				unusedDescendingDiagonals = (unusedDescendingDiagonals | (1L << diagonalShifting + x)) >> 1;
+				unusedColumns = unusedColumns | 1 << x;
+				unusedAscendingDiagonals = (unusedAscendingDiagonals | 1L << diagonalShifting + x) << 1;
+				unusedDescendingDiagonals = (unusedDescendingDiagonals | 1L << diagonalShifting + x) >> 1;
 
 				stacklevel++;
 
@@ -130,9 +128,9 @@ public class NQueensProblemCountBitFlagsIterative {
 				stacklevel--;
 				if (stacklevel > 0) {
 					x = stackx[stacklevel];
-					unusedColumns = unusedColumns ^ (1 << x);
-					unusedAscendingDiagonals = unusedAscendingDiagonals >> 1 ^ (1L << diagonalShifting + x);
-					unusedDescendingDiagonals = unusedDescendingDiagonals << 1 ^ (1L << diagonalShifting + x);
+					unusedColumns = unusedColumns ^ 1 << x;
+					unusedAscendingDiagonals = unusedAscendingDiagonals >> 1 ^ 1L << diagonalShifting + x;
+					unusedDescendingDiagonals = unusedDescendingDiagonals << 1 ^ 1L << diagonalShifting + x;
 				}
 				else {
 					return;
@@ -143,7 +141,7 @@ public class NQueensProblemCountBitFlagsIterative {
 
 	/**
 	 * Maisn program
-	 *
+	 * 
 	 * @param args
 	 */
 	public static void main(final String args[]) {

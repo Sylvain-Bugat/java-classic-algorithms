@@ -7,13 +7,11 @@ import java.util.Arrays;
 
 /**
  * Classic N chess queens on a size N chess board with iterative and stack method
- *
- * Time on Intel Q6600 CPU:
- * 8       9         10       11       12       13       14       15        16
- * 0m0.140s 0m0.112s 0m0.124s 0m0.133s 0m0.161s 0m0.411s 0m1.710s 0m11.115s 1m13.614s
- *
+ * 
+ * Time on Intel Q6600 CPU: 8 9 10 11 12 13 14 15 16 0m0.140s 0m0.112s 0m0.124s 0m0.133s 0m0.161s 0m0.411s 0m1.710s 0m11.115s 1m13.614s
+ * 
  * @author Sylvain Bugat
- *
+ * 
  */
 public class NQueensProblemCountIterative {
 
@@ -34,14 +32,14 @@ public class NQueensProblemCountIterative {
 	private final int chessboardSize;
 	private final int chessboardSizeMinusOne;
 
-	/**Stack for queens positions*/
+	/** Stack for queens positions */
 	private final int[] xStack;
-	/**Stack for ascending diagonal number*/
+	/** Stack for ascending diagonal number */
 	private final int[] ascDiagonalStack;
-	/**Stack for descending diagonal number*/
+	/** Stack for descending diagonal number */
 	private final int[] descDiagonalStack;
 
-	/**Current stack level*/
+	/** Current stack level */
 	private int stacklevel;
 
 	public NQueensProblemCountIterative(final int chessboardSizeArg) throws IOException {

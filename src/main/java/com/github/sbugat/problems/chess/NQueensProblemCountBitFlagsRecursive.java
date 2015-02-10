@@ -4,13 +4,11 @@ import gnu.getopt.Getopt;
 
 /**
  * Classic N chess queens on a size N chess board with bits flags
- *
- * Time on Intel Q6600 CPU:
- * 8       9         10       11       12       13       14       15        16
- * 0m0.112s 0m0.119s 0m0.109s 0m0.119s 0m0.159s 0m0.361s 0m1.500s 0m9.468s 1m1.047s
- *
+ * 
+ * Time on Intel Q6600 CPU: 8 9 10 11 12 13 14 15 16 0m0.112s 0m0.119s 0m0.109s 0m0.119s 0m0.159s 0m0.361s 0m1.500s 0m9.468s 1m1.047s
+ * 
  * @author Sylvain Bugat
- *
+ * 
  */
 public class NQueensProblemCountBitFlagsRecursive {
 
@@ -49,16 +47,16 @@ public class NQueensProblemCountBitFlagsRecursive {
 		// Test half square of the line
 		for (int x = 0; x < chessboardSize / 2; x++) {
 
-			unusedColumns = unusedColumns | (1 << x);
-			unusedAscendingDiagonals = (unusedAscendingDiagonals | (1L << diagonalShifting + x)) << 1;
-			unusedDescendingDiagonals = (unusedDescendingDiagonals | (1L << diagonalShifting + x)) >> 1;
+			unusedColumns = unusedColumns | 1 << x;
+			unusedAscendingDiagonals = (unusedAscendingDiagonals | 1L << diagonalShifting + x) << 1;
+			unusedDescendingDiagonals = (unusedDescendingDiagonals | 1L << diagonalShifting + x) >> 1;
 
 			// Go on to the second line
 			solve(1);
 
-			unusedColumns = unusedColumns ^ (1 << x);
-			unusedAscendingDiagonals = unusedAscendingDiagonals >> 1 ^ (1L << diagonalShifting + x);
-			unusedDescendingDiagonals = unusedDescendingDiagonals << 1 ^ (1L << diagonalShifting + x);
+			unusedColumns = unusedColumns ^ 1 << x;
+			unusedAscendingDiagonals = unusedAscendingDiagonals >> 1 ^ 1L << diagonalShifting + x;
+			unusedDescendingDiagonals = unusedDescendingDiagonals << 1 ^ 1L << diagonalShifting + x;
 		}
 
 		// Multiply by 2 the solution count for the other half not calculated
@@ -69,22 +67,22 @@ public class NQueensProblemCountBitFlagsRecursive {
 
 			final int x = chessboardSize / 2;
 
-			unusedColumns = unusedColumns | (1 << x);
-			unusedAscendingDiagonals = (unusedAscendingDiagonals | (1L << diagonalShifting + x)) << 1;
-			unusedDescendingDiagonals = (unusedDescendingDiagonals | (1L << diagonalShifting + x)) >> 1;
+			unusedColumns = unusedColumns | 1 << x;
+			unusedAscendingDiagonals = (unusedAscendingDiagonals | 1L << diagonalShifting + x) << 1;
+			unusedDescendingDiagonals = (unusedDescendingDiagonals | 1L << diagonalShifting + x) >> 1;
 
 			// Go on to the second line
 			solve(1);
 
-			unusedColumns = unusedColumns ^ (1 << x);
-			unusedAscendingDiagonals = unusedAscendingDiagonals >> 1 ^ (1L << diagonalShifting + x);
-			unusedDescendingDiagonals = unusedDescendingDiagonals << 1 ^ (1L << diagonalShifting + x);
+			unusedColumns = unusedColumns ^ 1 << x;
+			unusedAscendingDiagonals = unusedAscendingDiagonals >> 1 ^ 1L << diagonalShifting + x;
+			unusedDescendingDiagonals = unusedDescendingDiagonals << 1 ^ 1L << diagonalShifting + x;
 		}
 	}
 
 	/**
 	 * Solving recursive method, do a depth-first/back-tracking algorithm with bit flags to mark used columns and diagonals
-	 *
+	 * 
 	 * @param y number of the line stating at 0
 	 */
 	private void solve(final int y) {
@@ -93,14 +91,14 @@ public class NQueensProblemCountBitFlagsRecursive {
 		for (int x = 0; x < chessboardSize; x++) {
 
 			// if the row is not already blocked by another queen
-			if ((unusedColumns & (1L << x)) == 0) {
+			if ((unusedColumns & 1L << x) == 0) {
 
 				// if both diagonals are not already blocked by anothers queens
-				if ((unusedAscendingDiagonals & (1L << diagonalShifting + x)) == 0 && (unusedDescendingDiagonals & (1L << diagonalShifting + x)) == 0) {
+				if ((unusedAscendingDiagonals & 1L << diagonalShifting + x) == 0 && (unusedDescendingDiagonals & 1L << diagonalShifting + x) == 0) {
 
-					unusedColumns = unusedColumns | (1 << x);
-					unusedAscendingDiagonals = (unusedAscendingDiagonals | (1L << diagonalShifting + x)) << 1;
-					unusedDescendingDiagonals = (unusedDescendingDiagonals | (1L << diagonalShifting + x)) >> 1;
+					unusedColumns = unusedColumns | 1 << x;
+					unusedAscendingDiagonals = (unusedAscendingDiagonals | 1L << diagonalShifting + x) << 1;
+					unusedDescendingDiagonals = (unusedDescendingDiagonals | 1L << diagonalShifting + x) >> 1;
 
 					// All queens are sets on the chessboard then a solution is found!
 					if (y + 1 >= chessboardSize) {
@@ -111,9 +109,9 @@ public class NQueensProblemCountBitFlagsRecursive {
 						solve(y + 1);
 					}
 
-					unusedColumns = unusedColumns ^ (1 << x);
-					unusedAscendingDiagonals = unusedAscendingDiagonals >> 1 ^ (1L << diagonalShifting + x);
-					unusedDescendingDiagonals = unusedDescendingDiagonals << 1 ^ (1L << diagonalShifting + x);
+					unusedColumns = unusedColumns ^ 1 << x;
+					unusedAscendingDiagonals = unusedAscendingDiagonals >> 1 ^ 1L << diagonalShifting + x;
+					unusedDescendingDiagonals = unusedDescendingDiagonals << 1 ^ 1L << diagonalShifting + x;
 				}
 			}
 		}
@@ -121,7 +119,7 @@ public class NQueensProblemCountBitFlagsRecursive {
 
 	/**
 	 * Maisn program
-	 *
+	 * 
 	 * @param args
 	 */
 	public static void main(final String args[]) {
