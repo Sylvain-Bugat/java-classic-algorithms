@@ -2,8 +2,6 @@ package com.github.sbugat.puzzle.chess.nqueens.intro;
 
 import gnu.getopt.Getopt;
 
-import java.util.Arrays;
-
 import com.github.sbugat.puzzle.chess.nqueens.GenericNQueensSolver;
 import com.github.sbugat.puzzle.chess.nqueens.tools.BenchmarkTools;
 import com.github.sbugat.puzzle.chess.nqueens.tools.InvalidSolutionsException;
@@ -15,28 +13,16 @@ import com.github.sbugat.puzzle.chess.nqueens.tools.SequenceTools;
  * @author Sylvain Bugat
  * 
  */
-public final class NQueensSolver extends GenericNQueensSolver {
+public final class BasicNQueensSolver extends GenericNQueensSolver {
 
 	/** Chessboard used only to display a solution. */
 	private final boolean[][] chessboard;
-	/** Array to mark unused columns. */
-	private final boolean[] unusedColumns;
-	/** Array to mark unused ascending diagonals diagonal number = x + y. */
-	private final boolean[] unusedAscendingDiagonals;
-	/** Array to mark unused descending diagonals diagonal number = x + chess board size - 1 - y. */
-	private final boolean[] unusedDescendingDiagonals;
 
-	public NQueensSolver(final int chessboardSizeArg, final boolean printSolutionArg) {
+	public BasicNQueensSolver(final int chessboardSizeArg, final boolean printSolutionArg) {
 
 		super(chessboardSizeArg, printSolutionArg);
 
 		chessboard = new boolean[chessboardSizeArg][chessboardSizeArg];
-		unusedColumns = new boolean[chessboardSizeArg];
-		Arrays.fill(unusedColumns, true);
-		unusedAscendingDiagonals = new boolean[chessboardSizeArg * 2 - 1];
-		Arrays.fill(unusedAscendingDiagonals, true);
-		unusedDescendingDiagonals = new boolean[chessboardSizeArg * 2 - 1];
-		Arrays.fill(unusedDescendingDiagonals, true);
 	}
 
 	@Override
@@ -59,36 +45,79 @@ public final class NQueensSolver extends GenericNQueensSolver {
 		// Test all square of the line
 		for (int x = 0; x < chessboardSize; x++) {
 
-			// if the row is not already blocked by another queen
-			if (unusedColumns[x]) {
+			// if the target position is valid (not already blocked by another queen)
+			if (checkValidChessboardPosition(x, y)) {
 
-				final int ascendingDiagonalNumber = x + y;
-				final int descendingDiagonalNumber = x + chessboardSize - 1 - y;
+				chessboard[y][x] = true;
 
-				// if both diagonals are not already blocked by anothers queens
-				if (unusedAscendingDiagonals[ascendingDiagonalNumber] && unusedDescendingDiagonals[descendingDiagonalNumber]) {
-
-					chessboard[y][x] = true;
-					unusedColumns[x] = false;
-					unusedAscendingDiagonals[ascendingDiagonalNumber] = false;
-					unusedDescendingDiagonals[descendingDiagonalNumber] = false;
-
-					// All queens are sets on the chessboard then a solution is found!
-					if (y + 1 >= chessboardSize) {
-						solutionCount++;
-						print();
-					} else {
-						// Go on to the next line
-						solve(y + 1);
-					}
-
-					unusedDescendingDiagonals[descendingDiagonalNumber] = true;
-					unusedAscendingDiagonals[ascendingDiagonalNumber] = true;
-					unusedColumns[x] = true;
-					chessboard[y][x] = false;
+				// All queens are sets on the chessboard then a solution is found!
+				if (y + 1 >= chessboardSize) {
+					solutionCount++;
+					print();
+				} else {
+					// Go on to the next line
+					solve(y + 1);
 				}
+
+				chessboard[y][x] = false;
 			}
 		}
+	}
+
+	/**
+	 * Check if a chessboard position can be used to place a new queen.
+	 * 
+	 * @param targetX target X position
+	 * @param targetY target Y position
+	 * @return true if the position is valid, false otherwise
+	 */
+	private boolean checkValidChessboardPosition(final int targetX, final int targetY) {
+
+		if (chessboard[targetY][targetX]) {
+			return false;
+		}
+
+		for (int i = 1; i < chessboardSize; i++) {
+
+			if (targetX + i < chessboardSize) {
+
+				if (chessboard[targetY][targetX + i]) {
+					return false;
+				}
+
+				if (targetY + i < chessboardSize && chessboard[targetY + i][targetX + i]) {
+					return false;
+				}
+
+				if (targetY - i >= 0 && chessboard[targetY - i][targetX + i]) {
+					return false;
+				}
+			}
+
+			if (targetX - i >= 0) {
+
+				if (chessboard[targetY][targetX - i]) {
+					return false;
+				}
+
+				if (targetY + i < chessboardSize && chessboard[targetY + i][targetX - i]) {
+					return false;
+				}
+
+				if (targetY - i >= 0 && chessboard[targetY - i][targetX - i]) {
+					return false;
+				}
+			}
+
+			if (targetY + i < chessboardSize && chessboard[targetY + i][targetX]) {
+				return false;
+			}
+			if (targetY - i >= 0 && chessboard[targetY - i][targetX]) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -115,7 +144,7 @@ public final class NQueensSolver extends GenericNQueensSolver {
 				try {
 					chessboardSize = Integer.parseInt(getOpt.getOptarg());
 				} catch (final NumberFormatException e) {
-					System.err.println("Usage: " + NQueensSolver.class.getSimpleName() + " [-n <size of the chessboard>] [-s]"); //$NON-NLS-1$ //$NON-NLS-2$
+					System.err.println("Usage: " + BasicNQueensSolver.class.getSimpleName() + " [-n <size of the chessboard>] [-s]"); //$NON-NLS-1$ //$NON-NLS-2$
 					System.exit(1);
 				}
 				break;
@@ -126,15 +155,15 @@ public final class NQueensSolver extends GenericNQueensSolver {
 
 			case '?':
 			default:
-				System.err.println("Usage: " + NQueensSolver.class.getSimpleName() + " [-n <size of the chessboard>] [-s]"); //$NON-NLS-1$ //$NON-NLS-2$
+				System.err.println("Usage: " + BasicNQueensSolver.class.getSimpleName() + " [-n <size of the chessboard>] [-s]"); //$NON-NLS-1$ //$NON-NLS-2$
 				System.exit(1);
 			}
 
 			c = getOpt.getopt();
 		}
 
-		final GenericNQueensSolver nQueensSolver = new NQueensSolver(chessboardSize, printSolution);
-		final long solutionCount = nQueensSolver.solve();
+		final GenericNQueensSolver genericNQueensSolver = new BasicNQueensSolver(chessboardSize, printSolution);
+		final long solutionCount = genericNQueensSolver.solve();
 
 		// End of the algorithm print the total of solution(s) found
 		System.out.println("\nTotal number of solution(s):" + solutionCount); //$NON-NLS-1$
@@ -144,7 +173,7 @@ public final class NQueensSolver extends GenericNQueensSolver {
 			System.err.println("Invalid number of solutions found: " + solutionCount + " expected: " + SequenceTools.getExpectedSolutions(chessboardSize) + " check the algorithm."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 
-		System.out.println(BenchmarkTools.benchmark(new NQueensSolver(chessboardSize, false), 50));
+		System.out.println(BenchmarkTools.benchmark(new BasicNQueensSolver(chessboardSize, false), 50));
 	}
 
 	@Override
@@ -158,5 +187,4 @@ public final class NQueensSolver extends GenericNQueensSolver {
 	public boolean getChessboardPosition(final int x, final int y) {
 		return chessboard[y][x];
 	}
-
 }
