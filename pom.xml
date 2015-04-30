@@ -22,7 +22,7 @@
 		<maven.compiler.target>1.7</maven.compiler.target>
 
 		<!-- Maven version -->
-		<maven.version>3.0</maven.version>
+		<maven.version>3.0.5</maven.version>
 
 		<!-- Java GNU port of getopt-->
 		<gnu.getopt.version>1.0.13</gnu.getopt.version>
@@ -43,6 +43,7 @@
 		<maven.plugindeploy.version>2.8.2</maven.plugindeploy.version>
 		<maven.pluginassembly.version>2.5.4</maven.pluginassembly.version>
 		<maven.pluginshade.version>2.3</maven.pluginshade.version>
+		<maven.pluginexecutablejar.version>1.4.1</maven.pluginexecutablejar.version>
 		<maven.pluginantrun.version>1.8</maven.pluginantrun.version>
 		<maven.plugindependency.version>2.10</maven.plugindependency.version>
 		<maven.pluginrelease.version>2.5.2</maven.pluginrelease.version>
@@ -180,6 +181,22 @@
 								</filter>
 							</filters>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Executable jar plugin configuration -->
+			<!-- Add #!/bin/sh starter script before the complete jar and add executable right-->
+			<plugin>
+				<groupId>org.skife.maven</groupId>
+				<artifactId>really-executable-jar-maven-plugin</artifactId>
+				<version>${maven.pluginexecutablejar.version}</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>really-executable-jar</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>
