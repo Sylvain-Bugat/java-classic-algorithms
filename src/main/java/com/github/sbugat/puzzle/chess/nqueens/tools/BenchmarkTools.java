@@ -5,19 +5,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.github.sbugat.puzzle.chess.nqueens.NQueensPuzzle;
+import com.github.sbugat.puzzle.chess.nqueens.GenericNQueensSolver;
 
 public class BenchmarkTools {
 
-	public static long benchmark(final NQueensPuzzle nQueensPuzzle, final int benchmarkNumber) {
+	public static long benchmark(final GenericNQueensSolver genericNQueensSolver, final int benchmarkNumber) throws InvalidSolutionsException {
 
 		final List<Long> benckmark = new ArrayList<>();
 
 		for (int runNumber = 0; runNumber < benchmarkNumber; runNumber++) {
-			nQueensPuzzle.reset();
+			genericNQueensSolver.reset();
 			final long startNanoTime = System.nanoTime();
-			final long solutionCount = nQueensPuzzle.solve();
+			final long solutionCount = genericNQueensSolver.solve();
 			final long endNanoTime = System.nanoTime();
+
+			if (!SequenceTools.checkSolutionsFound(genericNQueensSolver.getPuzzleSize(), solutionCount)) {
+				throw new InvalidSolutionsException(solutionCount, SequenceTools.getExpectedSolutions(genericNQueensSolver.getPuzzleSize()), genericNQueensSolver.getPuzzleSize());
+			}
 
 			benckmark.add(Long.valueOf(endNanoTime - startNanoTime));
 		}

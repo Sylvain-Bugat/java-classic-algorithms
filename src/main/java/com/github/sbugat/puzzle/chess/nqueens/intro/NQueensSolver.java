@@ -4,8 +4,9 @@ import gnu.getopt.Getopt;
 
 import java.util.Arrays;
 
-import com.github.sbugat.puzzle.chess.nqueens.NQueensPuzzle;
+import com.github.sbugat.puzzle.chess.nqueens.GenericNQueensSolver;
 import com.github.sbugat.puzzle.chess.nqueens.tools.BenchmarkTools;
+import com.github.sbugat.puzzle.chess.nqueens.tools.InvalidSolutionsException;
 import com.github.sbugat.puzzle.chess.nqueens.tools.SequenceTools;
 
 /**
@@ -14,7 +15,7 @@ import com.github.sbugat.puzzle.chess.nqueens.tools.SequenceTools;
  * @author Sylvain Bugat
  * 
  */
-public final class NQueensSolver implements NQueensPuzzle {
+public final class NQueensSolver extends GenericNQueensSolver {
 
 	/** Chessboard used only to display a solution. */
 	private final boolean[][] chessboard;
@@ -25,18 +26,9 @@ public final class NQueensSolver implements NQueensPuzzle {
 	/** Array to mark unused descending diagonals diagonal number = x + chess board size - 1 - y. */
 	private final boolean[] unusedDescendingDiagonals;
 
-	/** Number of solution counter. */
-	private long solutionCount;
-
-	/** Size of the chess board. */
-	private final int chessboardSize;
-	/** Print solution flag. */
-	private final boolean printSolution;
-
 	public NQueensSolver(final int chessboardSizeArg, final boolean printSolutionArg) {
 
-		chessboardSize = chessboardSizeArg;
-		printSolution = printSolutionArg;
+		super(chessboardSizeArg, printSolutionArg);
 
 		chessboard = new boolean[chessboardSizeArg][chessboardSizeArg];
 		unusedColumns = new boolean[chessboardSizeArg];
@@ -62,6 +54,16 @@ public final class NQueensSolver implements NQueensPuzzle {
 
 		// Reinitialize the number of solutions found
 		solutionCount = 0;
+	}
+
+	@Override
+	public int getPuzzleSize() {
+		return chessboardSize;
+	}
+
+	@Override
+	public boolean getChessboardPosition(final int x, final int y) {
+		return chessboard[y][x];
 	}
 
 	/**
@@ -107,34 +109,12 @@ public final class NQueensSolver implements NQueensPuzzle {
 	}
 
 	/**
-	 * Print the current chessboard.
-	 */
-	public void print() {
-
-		if (printSolution) {
-			System.out.println("\nsolution number " + solutionCount); //$NON-NLS-1$
-
-			for (int y = 0; y < chessboardSize; y++) {
-
-				for (int x = 0; x < chessboardSize; x++) {
-
-					if (chessboard[y][x]) {
-						System.out.print(1);
-					} else {
-						System.out.print(0);
-					}
-				}
-				System.out.println();
-			}
-		}
-	}
-
-	/**
 	 * Main program.
 	 * 
 	 * @param args options
+	 * @throws InvalidSolutionsException
 	 */
-	public static void main(final String args[]) {
+	public static void main(final String args[]) throws InvalidSolutionsException {
 
 		final Getopt getOpt = new Getopt("NQueensProblem", args, ":n:s"); //$NON-NLS-1$ //$NON-NLS-2$
 		getOpt.setOpterr(false);
@@ -170,8 +150,8 @@ public final class NQueensSolver implements NQueensPuzzle {
 			c = getOpt.getopt();
 		}
 
-		final NQueensPuzzle nQueensPuzzle = new NQueensSolver(chessboardSize, printSolution);
-		final long solutionCount = nQueensPuzzle.solve();
+		final GenericNQueensSolver nQueensSolver = new NQueensSolver(chessboardSize, printSolution);
+		final long solutionCount = nQueensSolver.solve();
 
 		// End of the algorithm print the total of solution(s) found
 		System.out.println("\nTotal number of solution(s):" + solutionCount); //$NON-NLS-1$
@@ -181,6 +161,6 @@ public final class NQueensSolver implements NQueensPuzzle {
 			System.err.println("Invalid number of solutions found: " + solutionCount + " expected: " + SequenceTools.getExpectedSolutions(chessboardSize) + " check the algorithm."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 
-		BenchmarkTools.benchmark(new NQueensSolver(chessboardSize, false), 50);
+		System.out.println(BenchmarkTools.benchmark(new NQueensSolver(chessboardSize, false), 50));
 	}
 }
