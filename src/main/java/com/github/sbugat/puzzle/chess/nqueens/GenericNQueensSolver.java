@@ -28,9 +28,10 @@ public abstract class GenericNQueensSolver {
 
 				for (int x = 0; x < chessboardSize; x++) {
 
-					if (getChessboardPosition(y, x)) {
+					if (getChessboardPosition(x, y)) {
 						System.out.print(1);
-					} else {
+					}
+					else {
 						System.out.print(0);
 					}
 				}
