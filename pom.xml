@@ -46,7 +46,7 @@
 		<maven.pluginexecutablejar.version>1.4.1</maven.pluginexecutablejar.version>
 		<maven.pluginantrun.version>1.8</maven.pluginantrun.version>
 		<maven.plugindependency.version>2.10</maven.plugindependency.version>
-		<maven.pluginrelease.version>2.5.2</maven.pluginrelease.version>
+		<maven.pluginrelease.version>2.5.3</maven.pluginrelease.version>
 		<maven.pluginscmpublish.version>1.1</maven.pluginscmpublish.version>
 	</properties>
 
